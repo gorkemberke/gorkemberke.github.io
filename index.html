@@ -270,6 +270,44 @@
     .portrait-frame img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.14); }
     .portrait-frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(7, 11, 31, 0.65), transparent 45%); }
 
+    /* Fotoğraf yerine: altın "G" monogramı. Arkadaki yankılar fareyle kayıyor. */
+    .mono {
+      position: absolute; inset: 0; display: grid; place-items: center; transform: scale(1.14);
+      background:
+        radial-gradient(60% 50% at 30% 25%, rgba(76, 141, 255, 0.35), transparent 70%),
+        radial-gradient(50% 45% at 80% 85%, rgba(245, 197, 66, 0.2), transparent 70%),
+        linear-gradient(160deg, #111A40, var(--night));
+    }
+    .mono::before {
+      content: ""; position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      -webkit-mask-image: radial-gradient(circle at 50% 48%, #000 25%, transparent 72%);
+      mask-image: radial-gradient(circle at 50% 48%, #000 25%, transparent 72%);
+    }
+    .mono span {
+      grid-area: 1 / 1; font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(12rem, 24vw, 21rem); line-height: 1; letter-spacing: -0.05em;
+      transition: transform 0.5s var(--ease);
+    }
+    .mono-main {
+      background: linear-gradient(170deg, #FFF3C4 8%, var(--gold) 45%, #C98A12 100%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      filter: drop-shadow(0 24px 48px rgba(245, 197, 66, 0.28));
+      transform: translate(calc(var(--mx, 0) * 8px), calc(var(--my, 0) * 8px));
+    }
+    .mono-echo { color: transparent; -webkit-text-stroke: 1.5px rgba(245, 197, 66, 0.4); }
+    .mono-echo.e1 { opacity: 0.7; transform: translate(calc(-5% + var(--mx, 0) * -8px), calc(5% + var(--my, 0) * -8px)); }
+    .mono-echo.e2 { opacity: 0.45; transform: translate(calc(-10% + var(--mx, 0) * -16px), calc(10% + var(--my, 0) * -16px)); }
+    .mono-echo.e3 { opacity: 0.22; transform: translate(calc(-15% + var(--mx, 0) * -24px), calc(15% + var(--my, 0) * -24px)); }
+    .mono-caption {
+      position: absolute; z-index: 2; top: 1.4rem; left: 1.5rem; right: 1.5rem;
+      font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; line-height: 1.15; letter-spacing: -0.02em;
+    }
+    .mono-caption span { display: block; margin-top: 0.35rem; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 400; letter-spacing: 0; color: var(--muted); }
+
     /* Fotoğrafın köşesinde dönen yazılı rozet */
     .badge {
       position: absolute; left: -2.25rem; bottom: -2.25rem;
@@ -387,34 +425,28 @@
     .project-link { align-self: flex-start; margin-top: 1.5rem; font-weight: 600; color: var(--gold); border-bottom: 1px solid rgba(245, 197, 66, 0.4); padding-bottom: 2px; transition: border-color 0.2s; }
     .project-link:hover { border-color: var(--gold); }
 
-    /* ---------- 11. Video ---------- */
-    .video-stage {
-      position: relative; aspect-ratio: 16 / 9; overflow: hidden;
-      border-radius: 28px; background: var(--deep); border: 1px solid var(--stroke);
-      box-shadow: 0 50px 140px -50px rgba(76, 141, 255, 0.5);
+    /* ---------- 11. Kod editörü penceresi ("This website" kartı) ---------- */
+    .editor { height: 100%; display: flex; flex-direction: column; background: #0A0F24; font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.75; color: #C9D3EE; }
+    .editor-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0.55rem 1.25rem; font-size: 0.72rem; color: var(--muted);
+      background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid var(--stroke);
     }
-    .video-stage video { width: 100%; height: 100%; object-fit: cover; }
-    .play-overlay {
-      position: absolute; inset: 0; display: grid; place-items: center;
-      background: linear-gradient(to top, rgba(7, 11, 31, 0.7), rgba(7, 11, 31, 0.15));
-      transition: opacity 0.5s;
-    }
-    .video-stage.playing .play-overlay { opacity: 0; pointer-events: none; }
-    .play-circle {
-      position: relative; width: clamp(76px, 10vw, 120px); aspect-ratio: 1; border-radius: 50%;
-      display: grid; place-items: center; background: var(--gold); color: var(--gold-ink);
-      transition: transform 0.4s var(--ease);
-    }
-    .play-circle::before { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 1.5px solid rgba(245, 197, 66, 0.6); animation: pulse 2.2s ease-out infinite; }
+    .editor-live { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .editor-live::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #4ADE80; box-shadow: 0 0 8px #4ADE80; }
+    /* Satır numaraları CSS sayacıyla yazılıyor; başlangıç sayısı gerçek dosyadaki satır */
+    .editor-code { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 1.1rem 0; overflow: hidden; counter-reset: line var(--start-line, 0); }
+    .editor-code .cl { display: block; white-space: pre; padding-right: 1.25rem; counter-increment: line; }
+    .editor-code .cl::before { content: counter(line); display: inline-block; width: 3.6rem; padding-right: 1.2rem; text-align: right; color: rgba(154, 164, 196, 0.4); }
+    .editor-code .cl.hl { background: rgba(245, 197, 66, 0.08); box-shadow: inset 2px 0 0 var(--gold); }
+    .tk-kw { color: #FFB86B; }
+    .tk-fn { color: #7AB8FF; }
+    .tk-str { color: #8FD694; }
+    .tk-num { color: var(--gold); }
+    .tk-com { color: #6B7699; font-style: italic; }
+
+    /* Nabız animasyonu (zaman çizelgesinin "şimdi" adımı kullanıyor) */
     @keyframes pulse { from { transform: scale(0.85); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
-    .play-overlay:hover .play-circle { transform: scale(1.08); }
-    .play-circle svg { width: 34%; height: 34%; margin-left: 7%; fill: currentColor; }
-    .video-note {
-      position: absolute; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
-      width: max-content; max-width: calc(100% - 2rem); text-align: center;
-      padding: 0.6rem 1.1rem; border-radius: 999px; font-size: 0.92rem;
-      background: rgba(7, 11, 31, 0.88); border: 1px solid var(--stroke);
-    }
 
     /* ---------- 12. Zaman çizelgesi (Journey) ----------
        Ortada bir çizgi var; kaydırdıkça altınla doluyor ve
@@ -547,8 +579,9 @@
       .tl-item:nth-of-type(n) .tl-card { grid-column: 2; }
       .tl-year { display: none; }
       .tl-card { padding: 1.25rem 1.3rem; }
-      .video-stage { border-radius: 20px; }
       .terminal { font-size: 0.66rem; }
+      .editor { font-size: 0.62rem; }
+      .featured .project-media:has(.editor) { aspect-ratio: auto; }
       .project-media:has(.terminal.running), .project-media:has(.terminal.done) { height: 380px; }
     }
 
@@ -582,7 +615,6 @@
         <li><a href="#about">About</a></li>
         <li><a href="#journey">Journey</a></li>
         <li><a href="#projects">Projects</a></li>
-        <li><a href="#video">Video</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
       <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
@@ -596,8 +628,7 @@
       <li><a href="#about" style="--i:0">About</a></li>
       <li><a href="#journey" style="--i:1">Journey</a></li>
       <li><a href="#projects" style="--i:2">Projects</a></li>
-      <li><a href="#video" style="--i:3">Video</a></li>
-      <li><a href="#contact" style="--i:4">Contact</a></li>
+      <li><a href="#contact" style="--i:3">Contact</a></li>
     </ul>
   </div>
 
@@ -652,8 +683,16 @@
       <div class="container about-grid">
         <div class="portrait-wrap" data-reveal>
           <div class="portrait-frame">
-            <!-- Kendi fotoğrafını "profile.jpg" adıyla bu dosyanın yanına koy, src'yi "profile.jpg" yap -->
-            <img id="portrait" src="https://picsum.photos/seed/gorkem-portrait/700/880" alt="Portrait of Gorkem">
+            <!-- Fotoğraf koymak istersen: aşağıdaki <div class="mono" ...> bloğunu sil ve yerine
+                 <img id="portrait" src="profile.jpg" alt="Portrait of Gorkem"> yaz.
+                 profile.jpg dosyasını da GitHub'da index.html'in yanına yükle. -->
+            <div class="mono" id="portrait" aria-hidden="true">
+              <span class="mono-echo e3">G</span>
+              <span class="mono-echo e2">G</span>
+              <span class="mono-echo e1">G</span>
+              <span class="mono-main">G</span>
+            </div>
+            <p class="mono-caption">Gorkem Berke Pirpitoglu<span>IT student, Sydney</span></p>
           </div>
           <div class="badge" aria-hidden="true">
             <svg class="badge-ring" viewBox="0 0 200 200">
@@ -825,7 +864,29 @@
           <!-- Öne çıkan proje (geniş kart) -->
           <article class="project featured" data-reveal>
             <div class="project-inner tilt">
-              <div class="project-media"><img src="https://picsum.photos/seed/gorkem-web/1100/800" alt="Screenshot of this website"></div>
+              <div class="project-media">
+                <!-- Bu sitenin gerçek kodundan bir parça: kaydırdıkça dolan zaman çizelgesi.
+                     start-line değeri: parçanın index.html içinde başladığı satırın bir eksiği -->
+                <div class="editor" role="img" aria-label="A piece of this website's code: the timeline that fills in as you scroll">
+                  <div class="editor-bar"><span>index.html</span><span class="editor-live">gorkemberke.github.io</span></div>
+                  <div class="editor-code" style="--start-line: 1314">
+                    <span class="cl"><span class="tk-kw">const</span> timeline = document.<span class="tk-fn">getElementById</span>(<span class="tk-str">"timeline"</span>);</span>
+                    <span class="cl"><span class="tk-kw">const</span> timelineProgress = document.<span class="tk-fn">getElementById</span>(<span class="tk-str">"tl-progress"</span>);</span>
+                    <span class="cl"><span class="tk-kw">const</span> timelineItems = [...timeline.<span class="tk-fn">querySelectorAll</span>(<span class="tk-str">".tl-item"</span>)];</span>
+                    <span class="cl"> </span>
+                    <span class="cl"><span class="tk-kw">function</span> <span class="tk-fn">updateTimeline</span>() {</span>
+                    <span class="cl">  <span class="tk-kw">const</span> trigger = window.innerHeight * <span class="tk-num">0.6</span>;  <span class="tk-com">// ekranın %60 yüksekliği</span></span>
+                    <span class="cl">  <span class="tk-kw">const</span> r = timeline.<span class="tk-fn">getBoundingClientRect</span>();</span>
+                    <span class="cl">  <span class="tk-kw">const</span> progress = <span class="tk-fn">clamp</span>((trigger - r.top) / r.height, <span class="tk-num">0</span>, <span class="tk-num">1</span>);</span>
+                    <span class="cl">  timelineProgress.style.height = <span class="tk-str">`${progress * 100}%`</span>;</span>
+                    <span class="cl">  timelineItems.<span class="tk-fn">forEach</span>(item =&gt; {</span>
+                    <span class="cl">    <span class="tk-kw">const</span> dot = item.<span class="tk-fn">querySelector</span>(<span class="tk-str">".tl-dot"</span>).<span class="tk-fn">getBoundingClientRect</span>();</span>
+                    <span class="cl hl">    item.classList.<span class="tk-fn">toggle</span>(<span class="tk-str">"reached"</span>, dot.top + dot.height / <span class="tk-num">2</span> &lt; trigger);</span>
+                    <span class="cl">  });</span>
+                    <span class="cl">}</span>
+                  </div>
+                </div>
+              </div>
               <div class="project-body">
                 <ul class="tags"><li class="tag tag-web">HTML</li><li class="tag tag-web">CSS</li><li class="tag tag-web">JavaScript</li></ul>
                 <h3>This website</h3>
@@ -916,27 +977,6 @@
               </div>
             </div>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== VİDEO ===================== -->
-    <section class="section" id="video">
-      <div class="container">
-        <div class="section-head">
-          <h2 data-reveal>In action</h2>
-          <p data-reveal style="--d:0.1s">A short video of my projects running. Press play to watch.</p>
-        </div>
-        <div class="video-stage" id="video-stage" data-reveal>
-          <!-- Kendi videonu "video.mp4" adıyla bu dosyanın yanına koy.
-               Video yoksa kapak resmi (poster) ve bir uyarı görünür. -->
-          <video id="video-player" preload="metadata" playsinline poster="https://picsum.photos/seed/gorkem-video/1280/720">
-            <source src="video.mp4" type="video/mp4">
-          </video>
-          <button class="play-overlay" id="play-btn" aria-label="Play video">
-            <span class="play-circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span>
-          </button>
-          <p class="video-note" id="video-note" hidden>No video yet. Put a file named video.mp4 next to index.html.</p>
         </div>
       </div>
     </section>
@@ -1255,6 +1295,20 @@
       const r = portrait.parentElement.getBoundingClientRect();
       const offset = (r.top + r.height / 2) - window.innerHeight / 2;
       portrait.style.transform = `translateY(${clamp(offset * -0.08, -40, 40)}px) scale(1.14)`;
+    }
+
+    // Monogram: fare çerçevenin neresindeyse yankılar ters yöne kaysın (derinlik hissi)
+    const portraitFrame = portrait.parentElement;
+    if (finePointer && !reduceMotion) {
+      portraitFrame.addEventListener("mousemove", event => {
+        const r = portraitFrame.getBoundingClientRect();
+        portraitFrame.style.setProperty("--mx", ((event.clientX - r.left) / r.width - 0.5) * 2);
+        portraitFrame.style.setProperty("--my", ((event.clientY - r.top) / r.height - 0.5) * 2);
+      });
+      portraitFrame.addEventListener("mouseleave", () => {
+        portraitFrame.style.removeProperty("--mx");
+        portraitFrame.style.removeProperty("--my");
+      });
     }
 
     /* ---------- 8b) Zaman çizelgesi: çizgi kaydırdıkça dolsun, ulaştığı adımlar yansın ---------- */
@@ -1633,29 +1687,6 @@
         runLabel.textContent = "Run again";
         runBtn.disabled = false;
       });
-    });
-
-    /* ---------- 15) Video oynatıcı ---------- */
-    const videoStage = document.getElementById("video-stage");
-    const video = document.getElementById("video-player");
-    const videoNote = document.getElementById("video-note");
-    document.getElementById("play-btn").addEventListener("click", () => {
-      // video.mp4 bulunamadıysa uyarıyı göster
-      if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
-        videoNote.hidden = false;
-        return;
-      }
-      video.play()
-        .then(() => {
-          videoStage.classList.add("playing");
-          video.controls = true;
-          videoNote.hidden = true;
-        })
-        .catch(() => { videoNote.hidden = false; });
-    });
-    video.addEventListener("ended", () => {
-      videoStage.classList.remove("playing");
-      video.controls = false;
     });
 
     /* ---------- 17) E-postayı kopyala ---------- */
