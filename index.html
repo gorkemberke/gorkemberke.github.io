@@ -615,6 +615,7 @@
         <li><a href="#about">About</a></li>
         <li><a href="#journey">Journey</a></li>
         <li><a href="#projects">Projects</a></li>
+        <li><a href="history.html">History</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
       <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
@@ -628,7 +629,8 @@
       <li><a href="#about" style="--i:0">About</a></li>
       <li><a href="#journey" style="--i:1">Journey</a></li>
       <li><a href="#projects" style="--i:2">Projects</a></li>
-      <li><a href="#contact" style="--i:3">Contact</a></li>
+      <li><a href="history.html" style="--i:3">History</a></li>
+      <li><a href="#contact" style="--i:4">Contact</a></li>
     </ul>
   </div>
 
@@ -869,7 +871,7 @@
                      start-line değeri: parçanın index.html içinde başladığı satırın bir eksiği -->
                 <div class="editor" role="img" aria-label="A piece of this website's code: the timeline that fills in as you scroll">
                   <div class="editor-bar"><span>index.html</span><span class="editor-live">gorkemberke.github.io</span></div>
-                  <div class="editor-code" style="--start-line: 1314">
+                  <div class="editor-code" style="--start-line: 1316">
                     <span class="cl"><span class="tk-kw">const</span> timeline = document.<span class="tk-fn">getElementById</span>(<span class="tk-str">"timeline"</span>);</span>
                     <span class="cl"><span class="tk-kw">const</span> timelineProgress = document.<span class="tk-fn">getElementById</span>(<span class="tk-str">"tl-progress"</span>);</span>
                     <span class="cl"><span class="tk-kw">const</span> timelineItems = [...timeline.<span class="tk-fn">querySelectorAll</span>(<span class="tk-str">".tl-item"</span>)];</span>
@@ -919,12 +921,12 @@
                     <span class="ln hl" style="--n:8">Nurse Ayse is helping patients in the Emergency department.</span>
                     <span class="ln" style="--n:9">Database name: Hospital Scan Database, Number of scans: <span class="num">121</span></span>
                   </div>
-                  <form class="terminal-input" hidden>
+                  <div class="terminal-input" hidden>
                     <span class="prompt" aria-hidden="true">&gt;</span>
                     <input type="text" aria-label="Your answer" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" maxlength="20" placeholder="type yes or no">
                     <button type="button" data-answer="yes">yes</button>
                     <button type="button" data-answer="no">no</button>
-                  </form>
+                  </div>
                 </div>
               </div>
               <div class="project-body">
@@ -960,12 +962,12 @@
                     <span class="ln hl" style="--n:9">Preparing drink: Sparkling Water (carbonated), served 1 time(s) today.</span>
                     <span class="ln" style="--n:10">Baker -&gt; James, 5 years experience, 2 item(s) baked.</span>
                   </div>
-                  <form class="terminal-input" hidden>
+                  <div class="terminal-input" hidden>
                     <span class="prompt" aria-hidden="true">&gt;</span>
                     <input type="text" aria-label="Your answer" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" maxlength="20" placeholder="type yes or no">
                     <button type="button" data-answer="yes">yes</button>
                     <button type="button" data-answer="no">no</button>
-                  </form>
+                  </div>
                 </div>
               </div>
               <div class="project-body">
@@ -1649,10 +1651,13 @@
           const finish = answer => {
             form.hidden = true;
             field.value = "";
-            form.onsubmit = null;
+            field.onkeydown = null;
             resolve(answer);
           };
-          form.onsubmit = event => { event.preventDefault(); finish(field.value); };
+          // Form göndermek yerine Enter tuşunu dinliyoruz (önizleme pencereleri formları engelleyebiliyor)
+          field.onkeydown = event => {
+            if (event.key === "Enter" && !event.isComposing) { event.preventDefault(); finish(field.value); }
+          };
           form.querySelectorAll("[data-answer]").forEach(button => {
             button.onclick = () => finish(button.dataset.answer);
           });

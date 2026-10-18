@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>From Ötüken to Today | Gorkem</title>
+  <meta name="description" content="Turkic history from Central Asia to modern Türkiye: an interactive map, the leaders of each state and a history guide. In English and Turkish.">
+  <script>document.documentElement.classList.add("js");</script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- ============================================================
+       CSS: GÖRÜNÜŞ (portfolyo sitesiyle aynı renkler ve yazı tipleri)
+       ============================================================ -->
+  <style>
+    :root {
+      --night: #070B1F;
+      --deep: #0F1736;
+      --deep-2: #18214A;
+      --panel: rgba(255, 255, 255, 0.04);
+      --stroke: rgba(255, 255, 255, 0.10);
+      --stroke-strong: rgba(255, 255, 255, 0.22);
+      --text: #EEF1FA;
+      --muted: #9AA4C4;
+      --gold: #F5C542;
+      --gold-soft: #FFE08A;
+      --gold-ink: #1A1400;
+      --blue: #4C8DFF;
+
+      --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+      --font-body: "Instrument Sans", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 72px;
+    }
+
+    /* --- Temel ayarlar --- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.65; color: var(--text); background: var(--night); overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    [hidden] { display: none !important; }
+    ::selection { background: var(--gold); color: var(--gold-ink); }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
+    svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+    /* İki dil: sayfanın diline uymayan yazılar gizlenir */
+    body[data-lang="en"] [lang="tr"], body[data-lang="tr"] [lang="en"] { display: none !important; }
+
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none; opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .container { width: min(1240px, 100% - 40px); margin-inline: auto; }
+    .section { padding-block: clamp(5rem, 11vw, 8rem); position: relative; scroll-margin-top: 20px; }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+    .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1.5rem 3rem; flex-wrap: wrap; margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+    .section-head h2 { font-size: clamp(3rem, 8.5vw, 6.5rem); line-height: 0.92; letter-spacing: -0.045em; }
+    .section-head p { max-width: 40ch; color: var(--muted); font-size: 1.1rem; }
+
+    .js [data-reveal] { opacity: 0; transform: translateY(40px); filter: blur(8px); transition: opacity 1s var(--ease), transform 1s var(--ease), filter 1s var(--ease); transition-delay: var(--d, 0s); }
+    .js [data-reveal].visible { opacity: 1; transform: none; filter: none; }
+
+    /* --- Butonlar --- */
+    .btn { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.95rem 1.5rem; border-radius: 999px; font-weight: 600; font-size: 1rem; white-space: nowrap; transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s; }
+    .btn-gold { background: var(--gold); color: var(--gold-ink); }
+    .btn-gold:hover { background: var(--gold-soft); box-shadow: 0 14px 44px -12px rgba(245, 197, 66, 0.75); }
+    .btn-ghost { border: 1px solid var(--stroke-strong); background: rgba(255, 255, 255, 0.03); }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* --- Üst çubuk ve menü --- */
+    .progress { position: fixed; top: 0; left: 0; z-index: 60; height: 3px; width: 100%; background: linear-gradient(90deg, var(--blue), var(--gold)); transform-origin: 0 50%; transform: scaleX(0); }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; border-bottom: 1px solid transparent; transition: transform 0.5s var(--ease), background-color 0.3s, border-color 0.3s; }
+    .nav.scrolled { background: rgba(7, 11, 31, 0.78); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); border-color: var(--stroke); }
+    .nav.hidden { transform: translateY(-100%); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: var(--nav-h); }
+    .back-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; letter-spacing: -0.03em; }
+    .back-link svg { width: 18px; height: 18px; color: var(--gold); }
+    .nav-right { display: flex; align-items: center; gap: 2rem; }
+    .nav-links { display: flex; gap: 1.75rem; list-style: none; }
+    .nav-links a, .nav-links button { color: var(--muted); font-size: 0.98rem; transition: color 0.25s; }
+    .nav-links a:hover, .nav-links button:hover, .nav-links a.active { color: var(--text); }
+
+    .lang-switch { display: inline-flex; padding: 3px; border-radius: 999px; border: 1px solid var(--stroke-strong); background: rgba(255, 255, 255, 0.03); }
+    .lang-switch button { padding: 0.32rem 0.75rem; border-radius: 999px; font-size: 0.82rem; font-weight: 700; color: var(--muted); transition: background-color 0.25s, color 0.25s; }
+    .lang-switch button[aria-pressed="true"] { background: var(--gold); color: var(--gold-ink); }
+
+    /* --- Giriş --- */
+    .hero { position: relative; isolation: isolate; overflow: hidden; min-height: 92vh; min-height: 92svh; display: flex; align-items: flex-end; padding: calc(var(--nav-h) + 3rem) 0 clamp(3rem, 7vw, 5rem); }
+    .hero-glow { position: absolute; inset: -20%; z-index: -3; background: radial-gradient(38% 34% at 70% 35%, rgba(76, 141, 255, 0.28), transparent 70%), radial-gradient(30% 28% at 18% 85%, rgba(245, 197, 66, 0.16), transparent 70%); }
+    #hero-map { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; opacity: 0.9; -webkit-mask-image: radial-gradient(ellipse 80% 70% at 60% 40%, #000 35%, transparent 80%); mask-image: radial-gradient(ellipse 80% 70% at 60% 40%, #000 35%, transparent 80%); }
+    .hero h1 { font-size: clamp(3.4rem, 10.5vw, 9rem); line-height: 0.9; letter-spacing: -0.045em; max-width: 11ch; }
+    .hero-text { margin-top: 1.5rem; max-width: 48ch; font-size: clamp(1.1rem, 1.7vw, 1.35rem); line-height: 1.55; color: var(--muted); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2rem; }
+    .year-strip { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2.25rem; list-style: none; }
+    .year-strip a { display: inline-block; padding: 0.38rem 0.8rem; border-radius: 999px; border: 1px solid var(--stroke); font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); background: rgba(7, 11, 31, 0.5); transition: border-color 0.2s, color 0.2s; }
+    .year-strip a:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* --- Harita + dönemler --- */
+    .history-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
+    .map-wrap { position: sticky; top: calc(50vh - min(32vh, 260px)); height: min(64vh, 520px); border-radius: 26px; overflow: hidden; border: 1px solid var(--stroke); background: radial-gradient(80% 70% at 60% 40%, #101A45, var(--night)); }
+    #history-map { display: block; width: 100%; height: 100%; }
+    .map-hud { position: absolute; top: 1.25rem; left: 1.4rem; right: 1.4rem; pointer-events: none; transition: opacity 0.25s; }
+    .map-hud.swap { opacity: 0; }
+    .map-hud .era-date { font-family: var(--font-mono); font-size: 0.85rem; color: var(--gold); }
+    .map-hud h3 { margin-top: 0.3rem; font-size: clamp(1.3rem, 2.4vw, 2rem); line-height: 1.1; text-shadow: 0 2px 18px rgba(7, 11, 31, 0.8); }
+    .map-caption { position: absolute; left: 1.4rem; bottom: 1rem; font-size: 0.78rem; color: var(--muted); }
+
+    .era-list { list-style: none; padding-bottom: 20vh; }
+    .era { min-height: 70vh; display: flex; align-items: center; padding-block: 2rem; scroll-margin-top: 30vh; }
+    .era-card { width: 100%; padding: 1.7rem 1.8rem; border-radius: 22px; background: var(--panel); border: 1px solid var(--stroke); transition: opacity 0.5s, border-color 0.5s, background-color 0.5s; }
+    .js .era-card { opacity: 0.45; }
+    .js .era.active .era-card { opacity: 1; border-color: rgba(245, 197, 66, 0.38); background: rgba(255, 255, 255, 0.055); }
+    .era-card .era-date { font-family: var(--font-mono); font-size: 0.85rem; color: var(--gold); }
+    .era-card h3 { margin: 0.45rem 0 0.9rem; font-size: clamp(1.6rem, 2.7vw, 2.2rem); line-height: 1.1; }
+    .era-lead { font-size: 1.1rem; line-height: 1.55; margin-bottom: 0.9rem; }
+    .era-card p.era-body { color: var(--muted); }
+    .era-card p.era-body + p.era-body { margin-top: 0.8rem; }
+    .era-facts { list-style: none; display: grid; gap: 0.5rem; margin-top: 1.2rem; padding-top: 1.1rem; border-top: 1px solid var(--stroke); }
+    .era-facts li { display: flex; gap: 0.65rem; font-size: 0.94rem; line-height: 1.45; color: #C9D3EE; }
+    .era-facts li::before { content: ""; flex: none; width: 6px; height: 6px; margin-top: 0.5rem; border-radius: 50%; background: var(--gold); }
+    .era-leaders { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 1.1rem; }
+    .mini-label { font-size: 0.8rem; color: var(--muted); margin-right: 0.25rem; }
+    .chip { padding: 0.28rem 0.75rem; border-radius: 999px; border: 1px solid rgba(245, 197, 66, 0.35); background: rgba(245, 197, 66, 0.06); color: var(--gold); font-size: 0.82rem; font-weight: 600; transition: background-color 0.2s, color 0.2s; }
+    .chip:hover { background: var(--gold); color: var(--gold-ink); }
+
+    /* Rehber bir yeri gösterdiğinde o yer parlar */
+    .spotlight { animation: spotlight 2.8s var(--ease); }
+    @keyframes spotlight {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(245, 197, 66, 0); }
+      20%, 60% { box-shadow: 0 0 0 3px rgba(245, 197, 66, 0.8), 0 0 70px rgba(245, 197, 66, 0.35); }
+    }
+    @keyframes pulse { from { transform: scale(0.85); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+
+    /* --- Liderler --- */
+    .leader-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; }
+    .leader-tabs button { padding: 0.5rem 1rem; border-radius: 999px; border: 1px solid var(--stroke-strong); color: var(--muted); font-size: 0.9rem; font-weight: 600; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
+    .leader-tabs button:hover { color: var(--text); border-color: var(--gold); }
+    .leader-tabs button[aria-pressed="true"] { background: var(--gold); border-color: var(--gold); color: var(--gold-ink); }
+    .leader-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+    .leader { position: relative; padding: 1.5rem 1.1rem 1.25rem; border-radius: 20px; background: var(--panel); border: 1px solid var(--stroke); text-align: center; scroll-margin-top: 30vh; transition: border-color 0.3s; }
+    .leader:hover { border-color: rgba(245, 197, 66, 0.35); }
+    /* Madalyon: her devletin kendi rengi var (--tint) */
+    .medal {
+      position: relative; width: 96px; height: 96px; margin: 0 auto 1rem; border-radius: 50%;
+      display: grid; place-items: center;
+      background: radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--tint) 85%, white 15%), color-mix(in oklab, var(--tint) 45%, var(--night)) 72%);
+      box-shadow: inset 0 0 0 2px rgba(245, 197, 66, 0.6), 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+    .medal::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; border: 1px dashed rgba(255, 243, 196, 0.45); }
+    .medal img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .medal-initials { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; line-height: 1; letter-spacing: -0.02em; background: linear-gradient(170deg, #FFF3C4, var(--gold) 60%, #C98A12); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .medal-roman { display: block; margin-top: 0.15rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--gold-soft); text-align: center; }
+    .medal-num { position: absolute; top: -3px; right: -3px; min-width: 28px; height: 28px; padding: 0 6px; border-radius: 999px; display: grid; place-items: center; background: var(--gold); color: var(--gold-ink); font-size: 0.74rem; font-weight: 700; border: 2px solid var(--night); }
+    .leader h3 { font-size: 1.12rem; line-height: 1.2; letter-spacing: -0.01em; }
+    .leader-alt { margin-top: 0.15rem; font-size: 0.82rem; color: var(--muted); }
+    .leader-reign { margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--gold); }
+    .leader-note { margin-top: 0.5rem; font-size: 0.88rem; line-height: 1.45; color: var(--muted); }
+    .leader-state { margin-top: 0.75rem; font-size: 0.75rem; color: rgba(154, 164, 196, 0.8); }
+
+    /* --- Kaynaklar --- */
+    .sources-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.6rem 2rem; }
+    .sources-list a { color: var(--muted); border-bottom: 1px solid var(--stroke); transition: color 0.2s, border-color 0.2s; }
+    .sources-list a:hover { color: var(--gold); border-color: var(--gold); }
+    .sources-note { margin-top: 2rem; max-width: 70ch; color: var(--muted); font-size: 0.95rem; }
+
+    footer { border-top: 1px solid var(--stroke); padding-block: 2rem; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.95rem; }
+    .footer-inner a:hover { color: var(--gold); }
+
+    /* --- Tarih rehberi (sohbet penceresi) --- */
+    .guide-launcher {
+      position: fixed; right: 20px; bottom: 20px; z-index: 70;
+      display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.25rem 0.85rem 1rem;
+      border-radius: 999px; background: var(--gold); color: var(--gold-ink); font-weight: 700;
+      box-shadow: 0 14px 40px -10px rgba(245, 197, 66, 0.65);
+      transition: opacity 0.3s, transform 0.4s var(--ease), background-color 0.2s;
+    }
+    .guide-launcher:hover { background: var(--gold-soft); }
+    .guide-launcher.away { opacity: 0; pointer-events: none; transform: translateY(16px); }
+    .guide-dot { width: 9px; height: 9px; border-radius: 50%; background: #2E9E5B; box-shadow: 0 0 0 3px rgba(26, 20, 0, 0.15); }
+    .guide {
+      position: fixed; right: 20px; bottom: 20px; z-index: 71;
+      width: min(390px, calc(100vw - 32px)); height: min(580px, calc(100vh - 110px));
+      display: flex; flex-direction: column; overflow: hidden;
+      border-radius: 22px; background: rgba(12, 18, 44, 0.97); border: 1px solid var(--stroke-strong);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+      transform-origin: bottom right; opacity: 0; transform: translateY(16px) scale(0.96); visibility: hidden;
+      transition: opacity 0.3s, transform 0.4s var(--ease), visibility 0s linear 0.4s;
+    }
+    .guide.open { opacity: 1; transform: none; visibility: visible; transition: opacity 0.3s, transform 0.4s var(--ease), visibility 0s; }
+    .guide-head { display: flex; align-items: center; gap: 0.75rem; padding: 0.9rem 1rem; border-bottom: 1px solid var(--stroke); }
+    .guide-avatar { flex: none; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--gold-ink); }
+    .guide-title { flex: 1; min-width: 0; }
+    .guide-title strong { display: block; font-family: var(--font-display); font-size: 1.08rem; letter-spacing: -0.01em; }
+    .guide-title small { display: block; font-size: 0.76rem; color: var(--muted); }
+    .guide-close { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; color: var(--muted); }
+    .guide-close:hover { background: rgba(255, 255, 255, 0.08); color: var(--text); }
+    .guide-log { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.6rem; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+    .msg { max-width: 88%; padding: 0.65rem 0.9rem; border-radius: 16px; font-size: 0.93rem; line-height: 1.5; }
+    .msg.bot { align-self: flex-start; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--stroke); border-bottom-left-radius: 6px; }
+    .msg.user { align-self: flex-end; background: var(--gold); color: var(--gold-ink); font-weight: 500; border-bottom-right-radius: 6px; }
+    .msg.note { align-self: flex-start; background: none; border: 0; padding: 0 0.2rem; font-size: 0.8rem; color: var(--muted); }
+    .msg-go { display: inline-block; margin-top: 0.45rem; font-size: 0.82rem; font-weight: 600; color: var(--gold); border-bottom: 1px solid rgba(245, 197, 66, 0.4); }
+    .msg-options { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.55rem; }
+    .typing { display: inline-flex; gap: 4px; padding: 0.3rem 0; }
+    .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: typing 1.1s infinite; }
+    .typing span:nth-child(2) { animation-delay: 0.15s; }
+    .typing span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes typing { 0%, 60%, 100% { opacity: 0.3; transform: none; } 30% { opacity: 1; transform: translateY(-3px); } }
+    .guide-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0 1rem 0.75rem; }
+    .guide-chips button, .msg-options button { padding: 0.32rem 0.7rem; border-radius: 999px; border: 1px solid var(--stroke-strong); font-size: 0.8rem; color: var(--text); transition: border-color 0.2s, color 0.2s; }
+    .guide-chips button:hover, .msg-options button:hover { border-color: var(--gold); color: var(--gold); }
+    .guide-form { display: flex; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--stroke); }
+    .guide-form input { flex: 1; min-width: 0; padding: 0.7rem 0.9rem; border-radius: 12px; border: 1px solid var(--stroke); background: rgba(255, 255, 255, 0.05); color: var(--text); font: inherit; font-size: 0.95rem; }
+    .guide-form input:focus { outline: none; border-color: var(--gold); }
+    .guide-form button { padding: 0 1rem; border-radius: 12px; background: var(--gold); color: var(--gold-ink); font-weight: 700; }
+
+    /* --- Tablet ve telefon --- */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+    }
+    @media (max-width: 760px) {
+      :root { --nav-h: 64px; }
+      .container { width: min(1240px, 100% - 32px); }
+      .history-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .map-wrap { z-index: 5; top: calc(var(--nav-h) + 8px); height: 38vh; box-shadow: 0 -96px 0 0 var(--night), 0 24px 40px rgba(7, 11, 31, 0.9); }
+      .map-hud { top: 0.9rem; left: 1rem; right: 1rem; }
+      .map-hud h3 { font-size: 1.2rem; }
+      .map-caption { left: 1rem; bottom: 0.7rem; font-size: 0.7rem; }
+      .era { min-height: 60vh; scroll-margin-top: 55vh; }
+      .era-card { padding: 1.35rem 1.35rem; }
+      .leader-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+      .leader { padding: 1.2rem 0.75rem 1rem; scroll-margin-top: 20vh; }
+      .medal { width: 78px; height: 78px; }
+      .medal-initials { font-size: 1.55rem; }
+      .guide { left: 8px; right: 8px; bottom: 8px; width: auto; height: min(74vh, 620px); }
+      .guide-launcher { right: 12px; bottom: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+      html { scroll-behavior: auto; }
+      .js [data-reveal] { opacity: 1; transform: none; filter: none; }
+    }
+  </style>
+</head>
+<body data-lang="en">
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <!-- ===================== ÜST MENÜ ===================== -->
+  <nav class="nav" id="nav" aria-label="Main">
+    <div class="container nav-inner">
+      <a class="back-link" href="index.html">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        Gorkem
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="#eras"><span lang="en">The journey</span><span lang="tr">Yolculuk</span></a></li>
+          <li><a href="#leaders"><span lang="en">Leaders</span><span lang="tr">Liderler</span></a></li>
+          <li><a href="#sources"><span lang="en">Sources</span><span lang="tr">Kaynaklar</span></a></li>
+          <li><button type="button" data-open-guide><span lang="en">Ask the guide</span><span lang="tr">Rehbere sor</span></button></li>
+        </ul>
+        <div class="lang-switch" role="group" aria-label="Language / Dil">
+          <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-set-lang="tr" aria-pressed="false">TR</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ===================== GİRİŞ ===================== -->
+    <header class="hero" id="top">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <canvas id="hero-map" aria-hidden="true"></canvas>
+      <div class="container">
+        <h1><span lang="en">From Ötüken to Today</span><span lang="tr">Ötüken'den Bugüne</span></h1>
+        <p class="hero-text">
+          <span lang="en">More than two thousand years of Turkic history, from the steppes of Central Asia to modern Türkiye. Scroll through the map, meet the leaders, or ask the guide anything.</span>
+          <span lang="tr">Orta Asya bozkırlarından bugünkü Türkiye'ye, iki bin yılı aşkın Türk tarihi. Haritada ilerle, liderlerle tanış ya da rehbere istediğini sor.</span>
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-gold" href="#eras"><span lang="en">Start the journey</span><span lang="tr">Yolculuğa başla</span></a>
+          <button class="btn btn-ghost" type="button" data-open-guide><span lang="en">Ask the guide</span><span lang="tr">Rehbere sor</span></button>
+        </div>
+        <!-- Tarih kısayolları JavaScript ile dolduruluyor -->
+        <ul class="year-strip" id="year-strip" aria-label="Jump to an era"></ul>
+      </div>
+    </header>
+
+    <!-- ===================== HARİTA + DÖNEMLER ===================== -->
+    <section class="section" id="eras">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-reveal><span lang="en">The journey</span><span lang="tr">Yolculuk</span></h2>
+          <p data-reveal style="--d:0.1s">
+            <span lang="en">Scroll, and the map travels west with the story: from the Altai Mountains to Anatolia, and back to today's Turkic world.</span>
+            <span lang="tr">Kaydırdıkça harita da hikâyeyle birlikte batıya ilerler: Altay Dağları'ndan Anadolu'ya, oradan da bugünkü Türk dünyasına.</span>
+          </p>
+        </div>
+        <div class="history-grid">
+          <div class="map-wrap">
+            <canvas id="history-map" role="img" aria-label="Map of Turkic history from Central Asia to Anatolia"></canvas>
+            <div class="map-hud" id="map-hud" aria-live="polite"></div>
+            <p class="map-caption"><span lang="en">Simplified map of key centres</span><span lang="tr">Önemli merkezlerin sade haritası</span></p>
+          </div>
+          <!-- Dönem kartları JavaScript'teki ERAS listesinden oluşturuluyor -->
+          <ol class="era-list" id="era-list"></ol>
+        </div>
+      </div>
+      <template id="hud-overview">
+        <span class="era-date"><span lang="en">Scroll to begin</span><span lang="tr">Başlamak için kaydır</span></span>
+        <h3><span lang="en">From Ötüken to Anatolia</span><span lang="tr">Ötüken'den Anadolu'ya</span></h3>
+      </template>
+    </section>
+
+    <!-- ===================== LİDERLER ===================== -->
+    <section class="section" id="leaders">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-reveal><span lang="en">Leaders</span><span lang="tr">Liderler</span></h2>
+          <p data-reveal style="--d:0.1s">
+            <span lang="en">The rulers of the states on the map, from Mete Han to today: all 36 Ottoman sultans and all presidents of the Republic. Choose a state to filter.</span>
+            <span lang="tr">Haritadaki devletlerin hükümdarları, Mete Han'dan bugüne: 36 Osmanlı padişahının ve Cumhuriyet'in tüm cumhurbaşkanlarının hepsi. Süzmek için bir devlet seç.</span>
+          </p>
+        </div>
+        <div class="leader-tabs" id="leader-tabs" role="group" aria-label="Filter leaders by state"></div>
+        <!-- Lider kartları JavaScript'teki LEADERS listesinden oluşturuluyor.
+             Resim eklemek için: resmi "leaders" klasörüne koy (ör. leaders/fatih.jpg)
+             ve o liderin satırına img: "leaders/fatih.jpg" yaz. -->
+        <div class="leader-grid" id="leader-grid"></div>
+      </div>
+    </section>
+
+    <!-- ===================== KAYNAKLAR ===================== -->
+    <section class="section" id="sources">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-reveal><span lang="en">Sources</span><span lang="tr">Kaynaklar</span></h2>
+        </div>
+        <ul class="sources-list">
+          <li><a href="https://en.wikipedia.org/wiki/Xiongnu" target="_blank" rel="noopener">Xiongnu</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/First_Turkic_Khaganate" target="_blank" rel="noopener">First Turkic Khaganate</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Second_Turkic_Khaganate" target="_blank" rel="noopener">Second Turkic Khaganate</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Uyghur_Khaganate" target="_blank" rel="noopener">Uyghur Khaganate</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Kara-Khanid_Khanate" target="_blank" rel="noopener">Kara-Khanid Khanate</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Seljuk_Empire" target="_blank" rel="noopener">Seljuk Empire</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Sultanate_of_Rum" target="_blank" rel="noopener">Sultanate of Rum</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Ottoman_Empire" target="_blank" rel="noopener">Ottoman Empire</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/List_of_sultans_of_the_Ottoman_Empire" target="_blank" rel="noopener">List of sultans of the Ottoman Empire</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Gallipoli_campaign" target="_blank" rel="noopener">Gallipoli campaign</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Turkish_War_of_Independence" target="_blank" rel="noopener">Turkish War of Independence</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/History_of_the_Republic_of_Turkey" target="_blank" rel="noopener">History of the Republic of Turkey</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/List_of_presidents_of_Turkey" target="_blank" rel="noopener">List of presidents of Turkey</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Organization_of_Turkic_States" target="_blank" rel="noopener">Organization of Turkic States</a></li>
+        </ul>
+        <p class="sources-note">
+          <span lang="en">The texts on this page are short summaries written for this site, based mainly on these Wikipedia articles. Dates of ancient events are approximate, and some topics, such as the origins of the Asian Huns, are still debated by historians.</span>
+          <span lang="tr">Bu sayfadaki yazılar, ağırlıklı olarak bu Wikipedia maddelerine dayanarak site için yazılmış kısa özetlerdir. Eski olayların tarihleri yaklaşıktır; Asya Hunlarının kökeni gibi bazı konular tarihçiler arasında hâlâ tartışılmaktadır.</span>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span><span lang="en">A project by</span><span lang="tr">Hazırlayan:</span> <a href="index.html">Gorkem</a></span>
+      <a href="#top"><span lang="en">Back to top</span><span lang="tr">Başa dön</span></a>
+    </div>
+  </footer>
+
+  <!-- ===================== TARİH REHBERİ ===================== -->
+  <button class="guide-launcher" id="guide-launcher" type="button" aria-expanded="false" aria-controls="guide">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg>
+    <span lang="en">Ask history</span><span lang="tr">Tarihe sor</span>
+    <span class="guide-dot" id="guide-dot" hidden></span>
+  </button>
+
+  <section class="guide" id="guide" aria-label="History guide" inert>
+    <div class="guide-head">
+      <span class="guide-avatar" aria-hidden="true">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></svg>
+      </span>
+      <div class="guide-title">
+        <strong><span lang="en">History guide</span><span lang="tr">Tarih rehberi</span></strong>
+        <small><span lang="en">Answers using what's on this page</span><span lang="tr">Bu sayfadaki bilgilerle cevaplar</span></small>
+      </div>
+      <button class="guide-close" id="guide-close" type="button" aria-label="Close guide">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="guide-log" id="guide-log" aria-live="polite"></div>
+    <div class="guide-chips" id="guide-chips"></div>
+    <!-- Form yerine div: bazı önizleme pencereleri form göndermeyi engelliyor.
+         Enter tuşunu ve butonu JavaScript'te kendimiz dinliyoruz. -->
+    <div class="guide-form" id="guide-form">
+      <input id="guide-input" type="text" autocomplete="off" maxlength="160" enterkeyhint="send" aria-label="Your question">
+      <button type="button" id="guide-send"><span lang="en">Ask</span><span lang="tr">Sor</span></button>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================ -->
+  <script>
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const phoneLayout = window.matchMedia("(max-width: 760px)");
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+    const escapeHtml = text => String(text).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const lang = () => document.body.dataset.lang;
+    const pick = value => typeof value === "string" ? value : value[lang()];
+
+    // İki dilli metin için HTML: <span lang="en">..</span><span lang="tr">..</span>
+    function bi(value) {
+      if (value == null) return "";
+      if (typeof value === "string") return escapeHtml(value);
+      return `<span lang="en">${escapeHtml(value.en)}</span><span lang="tr">${escapeHtml(value.tr)}</span>`;
+    }
+
+    /* =========================================================
+       1) VERİ: DÖNEMLER
+       Her dönem: tarih, başlık, giriş, iki paragraf, önemli bilgiler,
+       önemli liderler, haritada kamera ayarı ve rehber için anahtar kelimeler.
+       ========================================================= */
+    const ERAS = [
+      {
+        id: "homeland", short: { en: "Origins", tr: "Köken" }, range: [-3000, -221],
+        date: { en: "Antiquity", tr: "Kadim çağlar" },
+        title: { en: "The homeland: Central Asia", tr: "Ana yurt: Orta Asya" },
+        lead: { en: "The story begins on the steppes of Central Asia, between the Altai Mountains and the Orkhon valley in today's Mongolia.", tr: "Hikâye, Altay Dağları ile bugünkü Moğolistan'daki Orhun vadisi arasında uzanan Orta Asya bozkırlarında başlar." },
+        body: [
+          { en: "Life here was shaped by the horse and the open grassland. Early Turkic-speaking tribes lived as pastoral nomads, moving their herds of horses, sheep and cattle between summer and winter pastures and living in felt tents (yurts).", tr: "Buradaki hayatı at ve geniş otlaklar belirledi. İlk Türk boyları yaz ve kış otlakları arasında at, koyun ve sığır sürüleriyle göç eden göçebelerdi ve keçeden yapılmış çadırlarda (otağ, yurt) yaşadılar." },
+          { en: "Steppe peoples were skilled horse archers and metalworkers, and their old beliefs honoured Tengri, the sky god. The area around Ötüken, in the Khangai Mountains, would later be seen as the sacred heart of Turkic rule.", tr: "Bozkır halkları usta atlı okçular ve demircilerdi; eski inançları gök tanrısı Tengri'ye dayanıyordu. Hangay Dağları'ndaki Ötüken çevresi, sonraki yüzyıllarda Türk hâkimiyetinin kutsal merkezi sayılacaktı." }
+        ],
+        facts: [
+          { en: "Altai Mountains: traditionally seen as the homeland of the Turkic peoples", tr: "Altay Dağları: geleneksel olarak Türklerin ana yurdu kabul edilir" },
+          { en: "Way of life: pastoral nomadism, horses and yurts", tr: "Yaşam: göçebe hayvancılık, at ve yurt (otağ)" },
+          { en: "Belief: Tengri, the sky god", tr: "İnanç: gök tanrısı Tengri" }
+        ],
+        leaders: [],
+        kw: ["ana yurt", "anayurt", "orta asya", "central asia", "altay", "altai", "bozkir", "steppe", "homeland", "gocebe", "nomad", "yurt", "otag", "atli okcu", "horse archer"],
+        map: { cam: [92, 46, 34], route: "altai", show: ["altai"] }
+      },
+      {
+        id: "huns", short: { en: "209 BC", tr: "MÖ 209" }, range: [-220, 216],
+        date: { en: "c. 220 BC – AD 216", tr: "MÖ 220 – MS 216 civarı" },
+        title: { en: "Asian Huns (Xiongnu)", tr: "Asya Hunları" },
+        lead: { en: "The Xiongnu, called the Asian Huns in Turkish history writing, built the first great empire of the eastern steppe.", tr: "Türk tarih yazımında Asya Hunları olarak anılan Hiung-nular, doğu bozkırlarının ilk büyük imparatorluğunu kurdu." },
+        body: [
+          { en: "Their first known ruler was Teoman (Touman). In 209 BC his son Mete Han (Modu Chanyu) took power, united the tribes and defeated the Donghu and the Yuezhi. In 200 BC he surrounded the Han emperor Gaozu at Baideng; afterwards the Han dynasty paid tribute in silk and other goods under the heqin treaties.", tr: "Bilinen ilk hükümdarları Teoman'dı. MÖ 209'da oğlu Mete Han başa geçti, boyları birleştirdi ve Tunguzları (Donghu) ile Yüeçileri yendi. MÖ 200'de Baideng'de Han imparatoru Gaozu'yu kuşattı; ardından Han hanedanı heqin antlaşmalarıyla ipek ve başka hediyeler göndermeye başladı." },
+          { en: "After long wars with the Han, the confederation split in AD 48 into Northern and Southern Xiongnu, and the north was defeated by AD 89. Turkish historians count the Asian Huns as the first Turkic state; scholars still debate their language, and many see them as a multi-ethnic confederation.", tr: "Han hanedanıyla uzun savaşların sonunda konfederasyon MS 48'de Kuzey ve Güney Hunları olarak ikiye ayrıldı; kuzey kolu MS 89'a kadar yenildi. Türk tarihçileri Asya Hunlarını ilk Türk devleti sayar; dilleri ise hâlâ tartışılır ve birçok bilim insanı onları çok etnikli bir birlik olarak görür." }
+        ],
+        facts: [
+          { en: "209 BC: Mete Han unites the steppe tribes", tr: "MÖ 209: Mete Han bozkır boylarını birleştirir" },
+          { en: "200 BC: Battle of Baideng against the Han dynasty", tr: "MÖ 200: Han hanedanına karşı Baideng kuşatması" },
+          { en: "AD 48: split into Northern and Southern Xiongnu", tr: "MS 48: Kuzey ve Güney Hunları olarak bölünme" },
+          { en: "Turkish tradition credits Mete Han with the decimal army system", tr: "Türk geleneği onluk ordu düzenini Mete Han'a atfeder" }
+        ],
+        leaders: ["teoman", "mete"],
+        kw: ["hun", "asya hun", "xiongnu", "hiung", "baideng", "onluk", "decimal"],
+        map: { cam: [96, 46.5, 32], route: "otuken", show: ["otuken"] }
+      },
+      {
+        id: "gokturk", short: { en: "552", tr: "552" }, range: [542, 744],
+        date: { en: "552–744", tr: "552–744" },
+        title: { en: "Göktürk Khaganate", tr: "Göktürk Kağanlığı" },
+        lead: { en: "The Göktürks were the first state to carry the name \"Türk\", and their stone inscriptions are the oldest surviving voice of the Turkic language.", tr: "Göktürkler \"Türk\" adını taşıyan ilk devletti; taş yazıtları, Türk dilinin günümüze ulaşan en eski sesidir." },
+        body: [
+          { en: "In 552 Bumin rose against his overlords, the Rouran, defeated them and proclaimed himself khagan at Ötüken. He died months later; his son Mukan ruled the east while his brother İstemi led the west, allying with Persia against the Hephthalites and sending envoys to Byzantium in 568. The realm split into Eastern and Western khaganates around 603, and both fell to China's Tang dynasty, in 630 and 657.", tr: "552'de Bumin, Türklerin hâkimi Avarlara (Juan-juan) karşı ayaklandı, onları yendi ve Ötüken'de kağanlığını ilan etti. Birkaç ay sonra öldü; doğuyu oğlu Mukan, batıyı kardeşi İstemi Yabgu yönetti. İstemi, Akhunlara karşı Sasanilerle ittifak kurdu ve 568'de Bizans'a elçiler gönderdi. Devlet 603 civarında Doğu ve Batı olarak ikiye ayrıldı; iki kol 630 ve 657'de Çin'deki Tang hanedanına yenildi." },
+          { en: "In 682 İlteriş (Kutluk) Kağan won back independence and founded the Second Göktürk Khaganate. Under Bilge Kağan, his brother Kül Tigin and the wise adviser Tonyukuk it flourished again. The Orkhon Inscriptions, raised in the 720s and 730s in the Orkhon script, tell the state's story in the rulers' own words. In 744 the Basmyls, Karluks and Uyghurs brought it down.", tr: "682'de İlteriş (Kutluk) Kağan bağımsızlığı yeniden kazanarak İkinci Göktürk Kağanlığı'nı kurdu. Bilge Kağan, kardeşi Kül Tigin ve bilge veziri Tonyukuk döneminde devlet yeniden güçlendi. 720'ler ve 730'larda Orhun alfabesiyle dikilen Orhun Yazıtları, devletin hikâyesini hükümdarların kendi ağzından anlatır. 744'te Basmıl, Karluk ve Uygurlar devleti yıktı." }
+        ],
+        facts: [
+          { en: "552: Bumin Kağan founds the khaganate at Ötüken", tr: "552: Bumin Kağan Ötüken'de devleti kurar" },
+          { en: "568: Göktürk envoys reach Constantinople", tr: "568: Göktürk elçileri Konstantinopolis'e ulaşır" },
+          { en: "682: Second Khaganate under İlteriş (Kutluk) Kağan", tr: "682: İlteriş Kutluk Kağan ile İkinci Kağanlık" },
+          { en: "732 and 735: the Kül Tigin and Bilge Kağan inscriptions", tr: "732 ve 735: Kül Tigin ve Bilge Kağan yazıtları" }
+        ],
+        leaders: ["bumin", "istemi", "ilteris", "bilge", "kultigin", "tonyukuk"],
+        kw: ["gokturk", "kokturk", "gok turk", "turk kaganligi", "turkic khaganate", "ikinci kaganlik", "second khaganate", "juan juan", "rouran", "otuken"],
+        map: { cam: [98, 46.5, 26], route: "orkhon", show: ["otuken", "orkhon"] }
+      },
+      {
+        id: "uyghur", short: { en: "744", tr: "744" }, range: [744, 840],
+        date: { en: "744–840", tr: "744–840" },
+        title: { en: "Uyghur Khaganate", tr: "Uygur Kağanlığı" },
+        lead: { en: "The Uyghurs replaced the Göktürks on the steppe and turned a nomadic empire into a land of cities, trade and books.", tr: "Uygurlar bozkırda Göktürklerin yerini aldı ve göçebe bir imparatorluğu şehirlerin, ticaretin ve kitapların ülkesine dönüştürdü." },
+        body: [
+          { en: "Kutluk Bilge Kül Kağan founded the khaganate in 744. His successor Bayan Çor built Ordu-Baliq, a walled capital on the Orkhon with palaces, temples and markets. When the An Lushan rebellion shook China, Uyghur horsemen helped the Tang retake Chang'an and Luoyang in 757; in return the Tang bought Uyghur horses for large amounts of silk.", tr: "Devleti 744'te Kutluk Bilge Kül Kağan kurdu. Ardılı Bayan Çor (Moyunçur), Orhun kıyısında saraylar, tapınaklar ve pazarlarla dolu surlu başkent Ordu-Balık'ı inşa etti. An Lushan isyanı Çin'i sarstığında Uygur atlıları, 757'de Tang hanedanının Çang-an ve Luoyang'ı geri almasına yardım etti; karşılığında Çin, Uygur atlarını yüksek miktarda ipekle satın aldı." },
+          { en: "Bögü Kağan adopted Manichaeism in the 760s, making the Uyghurs one of very few states ever to take it as an official religion. In 840 the Yenisei Kyrgyz sacked Ordu-Baliq. The Uyghurs moved south and founded new kingdoms in Gansu and around Turpan (Qocho), where they became famous for their scripts, books and Buddhist art.", tr: "Bögü Kağan 760'larda Maniheizm'i kabul etti; Uygurlar bu dini resmî din yapan çok az devletten biri oldu. 840'ta Kırgızlar Ordu-Balık'ı yağmaladı. Uygurlar güneye göçerek Kansu'da ve Turfan (Koço) çevresinde yeni devletler kurdu; buralarda yazıları, kitapları ve Budist sanatlarıyla ün kazandılar." }
+        ],
+        facts: [
+          { en: "744: Kutluk Bilge Kül Kağan founds the state", tr: "744: Kutluk Bilge Kül Kağan devleti kurar" },
+          { en: "757: Uyghur cavalry helps the Tang during the An Lushan rebellion", tr: "757: Uygur atlıları An Lushan isyanında Tang'a yardım eder" },
+          { en: "760s: Manichaeism becomes the official religion", tr: "760'lar: Maniheizm resmî din olur" },
+          { en: "840: Ordu-Baliq falls to the Yenisei Kyrgyz", tr: "840: Ordu-Balık Kırgızların eline geçer" }
+        ],
+        leaders: ["kutlukbilge", "bayancor", "bogu"],
+        kw: ["uygur", "uyghur", "ordu balik", "ordubalik", "maniheizm", "manichae", "mani dini", "koco", "qocho", "turfan", "turpan", "ipek yolu", "silk road", "an lushan"],
+        map: { cam: [98, 46.5, 26], route: "orduBalik", show: ["orduBalik"] }
+      },
+      {
+        id: "karakhanid", short: { en: "840", tr: "840" }, range: [840, 1212],
+        date: { en: "840–1212", tr: "840–1212" },
+        title: { en: "Karakhanids", tr: "Karahanlılar" },
+        lead: { en: "The Karakhanids were the first Turkic dynasty to make Islam the state religion, and they produced the first great works of Turkic literature.", tr: "Karahanlılar İslamiyet'i devlet dini yapan ilk Türk hanedanıydı ve Türk edebiyatının ilk büyük eserlerini verdi." },
+        body: [
+          { en: "The state grew out of a Karluk-led confederation around 840, with Bilge Kül Kadir Han as its first ruler. Around 932–934 Satuk Buğra Han converted to Islam and took Kashgar, and his successors made Islam the official faith. By 999 the Karakhanids had taken Bukhara and Samarkand from the Samanids.", tr: "Devlet 840 civarında Karluk önderliğindeki bir boy birliğinden doğdu; ilk hükümdarı Bilge Kül Kadir Han'dı. 932–934 civarında Satuk Buğra Han Müslüman oldu ve Kaşgar'ı aldı; ardılları İslamiyet'i resmî din yaptı. 999'a gelindiğinde Karahanlılar Buhara ve Semerkant'ı Samanoğullarından almıştı." },
+          { en: "In the 1040s the realm split into an Eastern khanate (Balasagun, later Kashgar) and a Western one (Samarkand). They became vassals of the Seljuks in 1089 and of the Kara Khitai after 1141, and the last khan fell to the Khwarazm-Shahs in 1212. Yusuf Has Hacib of Balasagun wrote Kutadgu Bilig (\"Wisdom that brings happiness\", 1069–70), and Mahmud of Kashgar compiled the Divanu Lügati't-Türk in the 1070s, the first comprehensive dictionary of Turkic.", tr: "1040'larda devlet Doğu (Balasagun, sonra Kaşgar) ve Batı (Semerkant) olarak ikiye ayrıldı. Önce 1089'da Selçukluların, 1141'den sonra da Karahıtayların tâbisi oldular; son han 1212'de Harzemşahlara yenildi. Balasagunlu Yusuf Has Hacib Kutadgu Bilig'i (\"Mutluluk veren bilgi\", 1069–70), Kaşgarlı Mahmud da Türkçenin ilk kapsamlı sözlüğü Divanü Lügati't-Türk'ü 1070'lerde yazdı." }
+        ],
+        facts: [
+          { en: "c. 840: founded under Bilge Kül Kadir Han", tr: "840 civarı: Bilge Kül Kadir Han ile kuruluş" },
+          { en: "c. 934: Satuk Buğra Han converts to Islam", tr: "934 civarı: Satuk Buğra Han Müslüman olur" },
+          { en: "1069–70: Kutadgu Bilig by Yusuf Has Hacib", tr: "1069–70: Yusuf Has Hacib'in Kutadgu Bilig'i" },
+          { en: "1070s: Divanu Lügati't-Türk by Kaşgarlı Mahmud", tr: "1070'ler: Kaşgarlı Mahmud'un Divanü Lügati't-Türk'ü" }
+        ],
+        leaders: ["kadirhan", "satuk"],
+        kw: ["karahanli", "karakhanid", "kara khanid", "kasgar", "kashgar", "balasagun", "semerkant", "samarkand", "buhara", "bukhara"],
+        map: { cam: [82, 43, 38], route: "kashgar", show: ["balasagun", "kashgar"] }
+      },
+      {
+        id: "seljuk", short: { en: "1037", tr: "1037" }, range: [985, 1194],
+        date: { en: "1037–1194", tr: "1037–1194" },
+        title: { en: "Great Seljuk Empire", tr: "Büyük Selçuklu Devleti" },
+        lead: { en: "The Seljuks carried Turkic power from Central Asia into the heart of the Islamic world and opened the gates of Anatolia.", tr: "Selçuklular Türk gücünü Orta Asya'dan İslam dünyasının kalbine taşıdı ve Anadolu'nun kapılarını açtı." },
+        body: [
+          { en: "The dynasty is named after Seljuk, an Oghuz chief who converted to Islam near Jend in 985. His grandsons Tuğrul and Çağrı led their people into Khorasan, took Merv and Nishapur in 1037–38 and defeated the Ghaznavids at Dandanakan in 1040. In 1055 Tuğrul entered Baghdad as the protector of the Abbasid caliph.", tr: "Hanedan adını, 985'te Cend yakınlarında Müslüman olan Oğuz beyi Selçuk Bey'den alır. Torunları Tuğrul ve Çağrı beyler halklarını Horasan'a götürdü, 1037–38'de Merv ve Nişabur'u aldı ve 1040'ta Dandanakan'da Gaznelileri yendi. Tuğrul Bey 1055'te Abbasi halifesinin koruyucusu olarak Bağdat'a girdi." },
+          { en: "On 26 August 1071 Sultan Alp Arslan defeated and captured the Byzantine emperor Romanos IV at Manzikert (Malazgirt), and Turkish tribes began settling across Anatolia. Under Melikşah and his vizier Nizamülmülk the empire reached its peak, and the Nizamiye madrasas spread learning. After Melikşah's death in 1092 the empire broke apart; Sultan Sencer lost to the Kara Khitai at Katvan in 1141, and the last Seljuk sultan in Iran fell in 1194.", tr: "26 Ağustos 1071'de Sultan Alp Arslan, Bizans imparatoru IV. Romanos Diogenes'i Malazgirt'te yenip esir aldı ve Türk boyları Anadolu'ya yerleşmeye başladı. Melikşah ve veziri Nizamülmülk döneminde devlet zirveye çıktı; Nizamiye medreseleri ilmi yaydı. 1092'de Melikşah'ın ölümüyle devlet parçalandı; Sultan Sencer 1141'de Katvan'da Karahıtaylara yenildi ve İran'daki son Selçuklu sultanı 1194'te düştü." }
+        ],
+        facts: [
+          { en: "1040: Battle of Dandanakan", tr: "1040: Dandanakan Savaşı" },
+          { en: "1055: Tuğrul Bey enters Baghdad", tr: "1055: Tuğrul Bey Bağdat'a girer" },
+          { en: "26 August 1071: Battle of Manzikert (Malazgirt)", tr: "26 Ağustos 1071: Malazgirt Meydan Muharebesi" },
+          { en: "1092: Melikşah dies and the empire starts to split", tr: "1092: Melikşah ölür, devlet parçalanmaya başlar" }
+        ],
+        leaders: ["tugrul", "alparslan", "meliksah", "sencer"],
+        kw: ["selcuklu", "seljuk", "buyuk selcuklu", "great seljuk", "dandanakan", "dandanaqan", "nizamiye", "nizamiyya", "katvan", "qatwan", "horasan", "khorasan", "merv"],
+        map: { cam: [55, 40, 44], route: "malazgirt", show: ["merv", "malazgirt"] }
+      },
+      {
+        id: "rum", short: { en: "1077", tr: "1077" }, range: [1077, 1308],
+        date: { en: "1077–1308", tr: "1077–1308" },
+        title: { en: "Anatolian Seljuks", tr: "Anadolu Selçukluları" },
+        lead: { en: "In Anatolia a new Seljuk state turned former Byzantine lands into a Turkish homeland.", tr: "Anadolu'da kurulan yeni bir Selçuklu devleti, eski Bizans topraklarını bir Türk yurduna dönüştürdü." },
+        body: [
+          { en: "Kutalmışoğlu Süleyman Şah founded the sultanate in 1077 with İznik (Nicaea) as its capital. After the First Crusade took İznik in 1097, Kılıç Arslan I moved the centre to Konya. In 1176 Kılıç Arslan II defeated the Byzantines at Myriokephalon, and Turkish rule in Anatolia became permanent.", tr: "Kutalmışoğlu Süleyman Şah devleti 1077'de İznik başkent olmak üzere kurdu. Birinci Haçlı Seferi 1097'de İznik'i alınca I. Kılıç Arslan merkezi Konya'ya taşıdı. 1176'da II. Kılıç Arslan Bizans'ı Miryokefalon'da yendi ve Anadolu'daki Türk hâkimiyeti kalıcı hale geldi." },
+          { en: "The sultanate peaked under Alaeddin Keykubad I (1220–1237), reaching both the Mediterranean and the Black Sea. A network of caravanserais such as the Sultan Han protected traders, and Konya became a centre of art and thought, home to the poet and mystic Mevlânâ Rumi. After the Mongols won at Kösedağ in 1243, the sultans became vassals of the Ilkhanate. The state ended in 1308 and Anatolia split into Turkish principalities (beyliks), among them the Ottomans.", tr: "Devlet I. Alaeddin Keykubad döneminde (1220–1237) zirveye çıktı; hem Akdeniz'e hem Karadeniz'e ulaştı. Sultan Han gibi kervansaraylardan oluşan bir ağ tüccarları korudu; Konya, Mevlânâ'nın da yaşadığı bir sanat ve düşünce merkezi oldu. 1243'te Kösedağ'da Moğollara yenilen sultanlar İlhanlılara bağlandı. Devlet 1308'de sona erdi ve Anadolu, aralarında Osmanlıların da bulunduğu beyliklere bölündü." }
+        ],
+        facts: [
+          { en: "1077: Süleyman Şah founds the state, capital İznik", tr: "1077: Süleyman Şah devleti kurar, başkent İznik" },
+          { en: "1097: the capital moves to Konya", tr: "1097: başkent Konya'ya taşınır" },
+          { en: "1176: Battle of Myriokephalon", tr: "1176: Miryokefalon Savaşı" },
+          { en: "1243: Battle of Kösedağ against the Mongols", tr: "1243: Moğollara karşı Kösedağ Savaşı" }
+        ],
+        leaders: ["suleymansah", "kilicarslan1", "kilicarslan2", "keykubad"],
+        kw: ["anadolu selcuklu", "turkiye selcuklu", "sultanate of rum", "rum sultanligi", "anatolian seljuk", "konya", "iznik", "nicaea", "miryokefalon", "myriokephalon", "mevlana", "rumi", "kervansaray", "caravanserai", "sultan han", "beylik"],
+        map: { cam: [36, 39, 20], route: "konya", show: ["konya"] }
+      },
+      {
+        id: "ottoman", short: { en: "1299", tr: "1299" }, range: [1299, 1922],
+        date: { en: "1299–1922", tr: "1299–1922" },
+        title: { en: "Ottoman Empire", tr: "Osmanlı Devleti" },
+        lead: { en: "From a small frontier principality, the Ottomans built one of the largest and longest-lasting empires in history.", tr: "Küçük bir uç beyliğinden yola çıkan Osmanlılar, tarihin en büyük ve en uzun ömürlü imparatorluklarından birini kurdu." },
+        body: [
+          { en: "Osman Gazi founded the beylik around 1299 near Söğüt. His son Orhan took Bursa in 1326 and made it the capital, and the Ottomans soon crossed into the Balkans; Murad I won at Kosovo in 1389. Timur defeated Bayezid I at Ankara in 1402, but after an eleven-year interregnum the state recovered. On 29 May 1453 Mehmed II conquered Constantinople, ending the Byzantine Empire, and Istanbul became the capital.", tr: "Osman Gazi beyliği 1299 civarında Söğüt çevresinde kurdu. Oğlu Orhan Gazi 1326'da Bursa'yı alıp başkent yaptı ve Osmanlılar kısa sürede Rumeli'ye geçti; I. Murad 1389'da Kosova'da zafer kazandı. Timur 1402'de Ankara Savaşı'nda Yıldırım Bayezid'i yendi; ancak on bir yıllık Fetret Devri'nden sonra devlet toparlandı. 29 Mayıs 1453'te Fatih Sultan Mehmed İstanbul'u fethederek Bizans İmparatorluğu'na son verdi ve İstanbul başkent oldu." },
+          { en: "Selim I defeated the Safavids at Chaldiran in 1514 and the Mamluks in 1516–17, bringing Egypt and the holy cities under Ottoman rule. Under Suleiman the Magnificent (1520–1566) the empire reached its greatest extent, winning at Mohács in 1526 and besieging Vienna in 1529. The failed siege of Vienna in 1683 and the Treaty of Karlowitz in 1699 began a long retreat. Reform periods followed: the Tanzimat (1839), the first constitution (1876) and the Young Turk Revolution (1908). The Balkan Wars of 1912–13 cost almost all the European lands.", tr: "Yavuz Sultan Selim, Safevileri 1514'te Çaldıran'da, Memlükleri de 1516–17'de yendi; Mısır ve kutsal şehirler Osmanlı yönetimine geçti. Kanuni Sultan Süleyman döneminde (1520–1566) devlet en geniş sınırlarına ulaştı; 1526'da Mohaç'ta zafer kazandı ve 1529'da Viyana'yı kuşattı. 1683'teki başarısız Viyana kuşatması ve 1699 Karlofça Antlaşması uzun bir gerilemenin başlangıcı oldu. Ardından reform dönemleri geldi: Tanzimat (1839), ilk anayasa (1876) ve 1908'de II. Meşrutiyet. 1912–13 Balkan Savaşları'nda Avrupa'daki toprakların neredeyse tamamı kaybedildi." }
+        ],
+        facts: [
+          { en: "c. 1299: Osman Gazi founds the beylik", tr: "1299 civarı: Osman Gazi beyliği kurar" },
+          { en: "29 May 1453: Mehmed II conquers Istanbul", tr: "29 Mayıs 1453: Fatih Sultan Mehmed İstanbul'u fetheder" },
+          { en: "1520–1566: greatest extent under Suleiman the Magnificent", tr: "1520–1566: Kanuni döneminde en geniş sınırlar" },
+          { en: "1839: the Tanzimat reforms begin", tr: "1839: Tanzimat reformları başlar" }
+        ],
+        leaders: ["osman1", "orhan", "mehmed2", "selim1", "suleyman1", "mahmud2", "abdulhamid2"],
+        kw: ["osmanli", "ottoman", "padisah", "sogut", "bursa", "kosova", "kosovo", "fetret", "interregnum", "caldiran", "chaldiran", "mohac", "mohacs", "karlofca", "karlowitz", "balkan", "rumeli"],
+        map: { cam: [31, 40, 14], route: "istanbul", show: ["sogut", "istanbul"] }
+      },
+      {
+        id: "war", short: { en: "1914", tr: "1914" }, range: [1914, 1923],
+        date: { en: "1914–1923", tr: "1914–1923" },
+        title: { en: "War and independence", tr: "Savaş ve bağımsızlık" },
+        lead: { en: "The First World War ended the Ottoman Empire, and a war of independence created a new Turkish state from its ruins.", tr: "Birinci Dünya Savaşı Osmanlı İmparatorluğu'nun sonunu getirdi; Kurtuluş Savaşı ise onun yıkıntılarından yeni bir Türk devleti doğurdu." },
+        body: [
+          { en: "The Ottomans entered the war in 1914 on the side of the Central Powers. At Gallipoli (Çanakkale) in 1915, Ottoman forces, with Mustafa Kemal among the commanders, held the straits against an Allied landing that included Australian and New Zealand (ANZAC) troops; the Allies withdrew in early 1916.", tr: "Osmanlı Devleti 1914'te İttifak Devletleri safında savaşa girdi. 1915'te Çanakkale'de, komutanları arasında Mustafa Kemal'in de bulunduğu Osmanlı kuvvetleri, Avustralya ve Yeni Zelanda (ANZAC) birliklerinin de yer aldığı İtilaf çıkarmasına karşı boğazları savundu; İtilaf kuvvetleri 1916 başında çekildi." },
+          { en: "After the Armistice of Mudros (30 October 1918), Allied troops occupied Istanbul and Greek forces landed at İzmir. Mustafa Kemal landed at Samsun on 19 May 1919, organised the resistance through the Erzurum and Sivas congresses, and on 23 April 1920 the Grand National Assembly opened in Ankara. The Turkish army won at Sakarya in 1921 and in the Great Offensive of August–September 1922. The Treaty of Lausanne, signed on 24 July 1923, recognised Türkiye's independence.", tr: "Mondros Mütarekesi'nin (30 Ekim 1918) ardından İtilaf birlikleri İstanbul'u işgal etti, Yunan kuvvetleri İzmir'e çıktı. Mustafa Kemal 19 Mayıs 1919'da Samsun'a çıktı, Erzurum ve Sivas kongreleriyle direnişi örgütledi; 23 Nisan 1920'de Ankara'da Türkiye Büyük Millet Meclisi açıldı. Türk ordusu 1921'de Sakarya'da, Ağustos–Eylül 1922'de de Büyük Taarruz'da kazandı. 24 Temmuz 1923'te imzalanan Lozan Antlaşması Türkiye'nin bağımsızlığını tanıdı." }
+        ],
+        facts: [
+          { en: "1915: the Gallipoli campaign (Çanakkale)", tr: "1915: Çanakkale Savaşları" },
+          { en: "19 May 1919: Mustafa Kemal lands at Samsun", tr: "19 Mayıs 1919: Mustafa Kemal Samsun'a çıkar" },
+          { en: "23 April 1920: the Grand National Assembly opens in Ankara", tr: "23 Nisan 1920: TBMM Ankara'da açılır" },
+          { en: "24 July 1923: Treaty of Lausanne", tr: "24 Temmuz 1923: Lozan Antlaşması" }
+        ],
+        leaders: ["mehmed6", "ataturk", "inonu"],
+        kw: ["kurtulus savasi", "istiklal harbi", "war of independence", "milli mucadele", "birinci dunya", "first world war", "world war i", "wwi", "1 dunya savasi", "mondros", "mudros", "sevr", "sevres", "erzurum kongresi", "sivas kongresi", "izmir", "yunan", "greek"],
+        map: { cam: [31.5, 40, 17], route: "ankara", show: ["canakkale", "samsun", "ankara"] }
+      },
+      {
+        id: "republic", short: { en: "1923", tr: "1923" }, range: [1923, 2100],
+        date: { en: "29 October 1923 –", tr: "29 Ekim 1923 –" },
+        title: { en: "Republic of Türkiye", tr: "Türkiye Cumhuriyeti" },
+        lead: { en: "On 29 October 1923 the Republic of Türkiye was proclaimed, with Ankara as its capital and Mustafa Kemal Atatürk as its first president.", tr: "29 Ekim 1923'te Türkiye Cumhuriyeti ilan edildi; başkent Ankara, ilk cumhurbaşkanı Mustafa Kemal Atatürk oldu." },
+        body: [
+          { en: "A rapid series of reforms reshaped the country. The caliphate was abolished in 1924, a new civil code came in 1926, and the Latin-based Turkish alphabet replaced the Arabic script in 1928. In 1934 the Surname Law gave Mustafa Kemal the name Atatürk, and women gained the right to vote and stand in national elections. Atatürk died on 10 November 1938 and İsmet İnönü succeeded him, keeping Türkiye neutral for most of the Second World War.", tr: "Hızlı bir reform dizisi ülkeyi yeniden şekillendirdi. 1924'te halifelik kaldırıldı, 1926'da yeni Medeni Kanun geldi ve 1928'de Latin harflerine dayalı Türk alfabesi Arap harflerinin yerini aldı. 1934'te Soyadı Kanunu ile Mustafa Kemal \"Atatürk\" soyadını aldı ve kadınlar milletvekili seçme ve seçilme hakkı kazandı. Atatürk 10 Kasım 1938'de hayatını kaybetti; yerine geçen İsmet İnönü, Türkiye'yi İkinci Dünya Savaşı'nın büyük bölümünde tarafsız tuttu." },
+          { en: "Multi-party politics began in 1946, and in 1950 the Democrat Party won power at the ballot box. Türkiye joined NATO in 1952. The following decades saw military interventions in 1960, 1971 and 1980, EU candidacy from 1999, a failed coup attempt on 15 July 2016, and a switch to a presidential system after the 2017 referendum.", tr: "1946'da çok partili hayata geçildi ve 1950'de Demokrat Parti seçimle iktidara geldi. Türkiye 1952'de NATO'ya katıldı. Sonraki on yıllarda 1960, 1971 ve 1980'de askerî müdahaleler yaşandı; 1999'da AB adaylığı başladı, 15 Temmuz 2016'da bir darbe girişimi bastırıldı ve 2017 referandumunun ardından cumhurbaşkanlığı hükümet sistemine geçildi." }
+        ],
+        facts: [
+          { en: "1924: the caliphate is abolished", tr: "1924: halifelik kaldırılır" },
+          { en: "1928: the new Turkish alphabet", tr: "1928: yeni Türk alfabesi" },
+          { en: "1934: Surname Law and women's right to vote", tr: "1934: Soyadı Kanunu ve kadınlara seçme-seçilme hakkı" },
+          { en: "1952: Türkiye joins NATO", tr: "1952: Türkiye NATO'ya katılır" }
+        ],
+        leaders: ["ataturk", "inonu"],
+        kw: ["cumhuriyet", "republic", "turkiye cumhuriyeti", "inkilap", "devrim", "reform", "nato", "cok partili", "multi party", "demokrat parti", "darbe", "coup"],
+        map: { cam: [33, 39.5, 13], route: "ankara", show: ["ankara"] }
+      },
+      {
+        id: "today", short: { en: "Today", tr: "Bugün" }, range: [1991, 2100],
+        date: { en: "Today", tr: "Bugün" },
+        title: { en: "The Turkic world today", tr: "Bugün Türk dünyası" },
+        lead: { en: "A century after the founding of the Republic, the Turkic world stretches from the Balkans to Siberia.", tr: "Cumhuriyet'in kuruluşundan bir asır sonra Türk dünyası Balkanlar'dan Sibirya'ya uzanıyor." },
+        body: [
+          { en: "There are six independent Turkic states today: Türkiye, Azerbaijan, Kazakhstan, Kyrgyzstan, Uzbekistan and Turkmenistan, the last five independent since the Soviet Union broke up in 1991. Turkic peoples also live in Russia (such as Tatars, Bashkirs and Yakuts), China (Uyghurs), Iran (Azerbaijanis) and many other countries.", tr: "Bugün altı bağımsız Türk devleti var: Türkiye, Azerbaycan, Kazakistan, Kırgızistan, Özbekistan ve Türkmenistan; son beşi 1991'de Sovyetler Birliği'nin dağılmasıyla bağımsız oldu. Türk halkları Rusya'da (Tatarlar, Başkurtlar, Yakutlar gibi), Çin'de (Uygurlar), İran'da (Azerbaycan Türkleri) ve daha birçok ülkede yaşıyor." },
+          { en: "In 2009 the Nakhchivan Agreement created the Turkic Council, renamed the Organization of Turkic States in 2021. Its members are Türkiye, Azerbaijan, Kazakhstan, Kyrgyzstan and Uzbekistan, with Turkmenistan and Hungary among the observers. In 2024 the members agreed on a common 34-letter Latin-based Turkic alphabet. The journey that began in Ötüken now links Anatolia back to Central Asia.", tr: "2009'da Nahçıvan Anlaşması ile Türk Konseyi kuruldu; 2021'de adı Türk Devletleri Teşkilatı oldu. Üyeleri Türkiye, Azerbaycan, Kazakistan, Kırgızistan ve Özbekistan; Türkmenistan ve Macaristan gözlemciler arasında. 2024'te üyeler 34 harfli, Latin harflerine dayalı ortak bir Türk alfabesi üzerinde uzlaştı. Ötüken'de başlayan yolculuk bugün Anadolu'yu yeniden Orta Asya'ya bağlıyor." }
+        ],
+        facts: [
+          { en: "1991: the Central Asian and Caucasian Turkic republics become independent", tr: "1991: Orta Asya ve Kafkasya'daki Türk cumhuriyetleri bağımsız olur" },
+          { en: "2009: the Turkic Council is founded in Nakhchivan", tr: "2009: Türk Konseyi Nahçıvan'da kurulur" },
+          { en: "2021: renamed the Organization of Turkic States", tr: "2021: adı Türk Devletleri Teşkilatı olur" },
+          { en: "2024: a common Turkic alphabet is agreed", tr: "2024: ortak Türk alfabesi üzerinde uzlaşılır" }
+        ],
+        leaders: [],
+        kw: ["bugun", "today", "gunumuz", "turk dunyasi", "turkic world", "azerbaycan", "azerbaijan", "kazakistan", "kazakhstan", "kirgizistan", "kyrgyzstan", "ozbekistan", "uzbekistan", "turkmenistan", "macaristan", "hungary", "nahcivan", "nakhchivan", "tatar", "basqurt", "yakut"],
+        map: { cam: [52, 43.5, 58], route: "ankara", show: ["ankara", "baku", "ashgabat", "tashkent", "bishkek", "astana"], links: true }
+      }
+    ];
+
+    /* =========================================================
+       2) VERİ: DEVLETLER VE LİDERLER
+       tint: madalyonun rengi. Resim eklemek için bir lidere img: "leaders/dosya.jpg" ekle.
+       ========================================================= */
+    const STATES = {
+      huns:       { en: "Asian Huns",           tr: "Asya Hunları",          tint: "#1E6F78", era: "huns" },
+      gokturk:    { en: "Göktürks",             tr: "Göktürkler",            tint: "#2F6FDB", era: "gokturk" },
+      uyghur:     { en: "Uyghurs",              tr: "Uygurlar",              tint: "#1F8A5B", era: "uyghur" },
+      karakhanid: { en: "Karakhanids",          tr: "Karahanlılar",          tint: "#A0662A", era: "karakhanid" },
+      seljuk:     { en: "Great Seljuks",        tr: "Büyük Selçuklular",     tint: "#1A9A9A", era: "seljuk" },
+      rum:        { en: "Anatolian Seljuks",    tr: "Anadolu Selçukluları",  tint: "#4A5FC1", era: "rum" },
+      ottoman:    { en: "Ottoman Empire",       tr: "Osmanlı Devleti",       tint: "#9B2335", era: "ottoman" },
+      republic:   { en: "Republic of Türkiye",  tr: "Türkiye Cumhuriyeti",   tint: "#C8322E", era: "republic" }
+    };
+
+    // Kısa yazım yardımcısı: L(id, devlet, Türkçe ad, İngilizce ad, dönem, not, ekstra)
+    const L = (id, state, tr, en, reign, note, extra = {}) => ({ id, state, name: { tr, en }, reign, note, ...extra });
+    const sultan = (n, id, tr, en, reign, note, extra = {}) => L(id, "ottoman", tr, en, reign, note, { n, ...extra });
+    const president = (n, id, name, reign, note, extra = {}) => L(id, "republic", name, name, reign, note, { n, ...extra });
+
+    const LEADERS = [
+      L("teoman", "huns", "Teoman", "Touman", { en: "c. 220–209 BC", tr: "MÖ 220–209 civarı" }, { en: "First known ruler of the Xiongnu.", tr: "Asya Hunlarının bilinen ilk hükümdarı." }),
+      L("mete", "huns", "Mete Han", "Mete Han (Modu Chanyu)", { en: "209–174 BC", tr: "MÖ 209–174" }, { en: "United the steppe tribes into an empire.", tr: "Bozkır boylarını birleştirip imparatorluk kurdu." }, { founder: true, kw: ["mete", "modu"] }),
+
+      L("bumin", "gokturk", "Bumin Kağan", "Bumin Qaghan", "552", { en: "Founded the Göktürk Khaganate at Ötüken.", tr: "Göktürk Kağanlığı'nı Ötüken'de kurdu." }, { founder: true }),
+      L("istemi", "gokturk", "İstemi Yabgu", "İstemi Yabgu", "552–576", { en: "Ruled the west and sent envoys to Byzantium.", tr: "Batıyı yönetti, Bizans'a elçiler gönderdi." }),
+      L("mukan", "gokturk", "Mukan Kağan", "Muqan Qaghan", "553–572", { en: "Expanded the khaganate in the east.", tr: "Doğuda devleti genişletti." }),
+      L("ilteris", "gokturk", "İlteriş Kutluk Kağan", "Ilterish Qaghan", "682–692", { en: "Founded the Second Göktürk Khaganate.", tr: "İkinci Göktürk Kağanlığı'nı kurdu." }, { kw: ["ilteris", "kutluk kagan"] }),
+      L("kapgan", "gokturk", "Kapgan Kağan", "Qapaghan Qaghan", "692–716", { en: "Expanded the Second Khaganate.", tr: "İkinci Kağanlığı genişletti." }),
+      L("bilge", "gokturk", "Bilge Kağan", "Bilge Qaghan", "717–734", { en: "A golden age; his inscription stands in the Orkhon valley.", tr: "Altın çağ; yazıtı Orhun vadisinde duruyor." }),
+      L("kultigin", "gokturk", "Kül Tigin", "Kül Tigin", { en: "d. 731", tr: "ö. 731" }, { en: "Prince and commander, brother of Bilge Kağan.", tr: "Bilge Kağan'ın kardeşi, komutan ve şehzade." }, { kw: ["kul tigin", "kultigin"] }),
+      L("tonyukuk", "gokturk", "Tonyukuk", "Tonyukuk", { en: "adviser, 682–716", tr: "vezir, 682–716" }, { en: "The wise adviser of the khagans.", tr: "Kağanların bilge veziri." }),
+
+      L("kutlukbilge", "uyghur", "Kutluk Bilge Kül Kağan", "Qutlugh Bilge Köl", "744–747", { en: "Founded the Uyghur Khaganate.", tr: "Uygur Kağanlığı'nı kurdu." }, { founder: true }),
+      L("bayancor", "uyghur", "Bayan Çor", "Bayanchur Khan", "747–759", { en: "Built the capital Ordu-Baliq.", tr: "Başkent Ordu-Balık'ı inşa etti." }, { kw: ["moyuncur", "moyunchur"] }),
+      L("bogu", "uyghur", "Bögü Kağan", "Bögü Qaghan", "759–780", { en: "Made Manichaeism the state religion.", tr: "Maniheizm'i devlet dini yaptı." }),
+
+      L("kadirhan", "karakhanid", "Bilge Kül Kadir Han", "Bilge Kül Qadir Khan", "840–893", { en: "First ruler of the Karakhanids.", tr: "Karahanlıların ilk hükümdarı." }, { founder: true }),
+      L("satuk", "karakhanid", "Satuk Buğra Han", "Satuq Bughra Khan", { en: "d. 955", tr: "ö. 955" }, { en: "Converted to Islam around 934 and took Kashgar.", tr: "934 civarında Müslüman oldu ve Kaşgar'ı aldı." }),
+
+      L("tugrul", "seljuk", "Tuğrul Bey", "Tughril Beg", "1037–1063", { en: "Founded the empire and entered Baghdad in 1055.", tr: "Devleti kurdu, 1055'te Bağdat'a girdi." }, { founder: true }),
+      L("alparslan", "seljuk", "Alp Arslan", "Alp Arslan", "1063–1072", { en: "Won the Battle of Manzikert in 1071.", tr: "1071 Malazgirt Zaferi'ni kazandı." }, { kw: ["alparslan", "alp arslan"] }),
+      L("meliksah", "seljuk", "Melikşah", "Malik-Shah I", "1072–1092", { en: "The empire's peak, with his vizier Nizamülmülk.", tr: "Veziri Nizamülmülk ile devletin zirvesi." }, { kw: ["meliksah", "malik shah", "nizamulmulk"] }),
+      L("sencer", "seljuk", "Ahmed Sencer", "Ahmad Sanjar", "1118–1157", { en: "The last great Seljuk sultan.", tr: "Son büyük Selçuklu sultanı." }, { last: true, kw: ["sencer", "sanjar"] }),
+
+      L("suleymansah", "rum", "Kutalmışoğlu Süleyman Şah", "Suleiman ibn Qutalmish", "1077–1086", { en: "Founded the Anatolian Seljuk state.", tr: "Anadolu Selçuklu Devleti'ni kurdu." }, { founder: true, kw: ["suleyman sah", "kutalmisoglu"] }),
+      L("kilicarslan1", "rum", "I. Kılıç Arslan", "Kilij Arslan I", "1092–1107", { en: "Fought the First Crusade; the capital moved to Konya.", tr: "Birinci Haçlı Seferi'ne karşı savaştı; başkent Konya'ya taşındı." }, { base: "kilic arslan", ord: 1 }),
+      L("kilicarslan2", "rum", "II. Kılıç Arslan", "Kilij Arslan II", "1156–1192", { en: "Defeated the Byzantines at Myriokephalon in 1176.", tr: "1176'da Miryokefalon'da Bizans'ı yendi." }, { base: "kilic arslan", ord: 2 }),
+      L("keykubad", "rum", "I. Alaeddin Keykubad", "Kayqubad I", "1220–1237", { en: "The golden age; caravanserais and new ports.", tr: "Altın çağ; kervansaraylar ve yeni limanlar." }, { kw: ["keykubad", "kayqubad", "alaeddin"] }),
+
+      sultan(1, "osman1", "Osman Gazi", "Osman I", "c. 1299–1324", { en: "Founder of the Ottoman state.", tr: "Osmanlı Devleti'nin kurucusu." }, { founder: true, base: "osman", ord: 1, alt: { tr: "I. Osman", en: "Osman Gazi" }, kw: ["osman gazi", "osman bey"] }),
+      sultan(2, "orhan", "Orhan Gazi", "Orhan", "1324–1362", { en: "Took Bursa in 1326 and made it the capital.", tr: "1326'da Bursa'yı alıp başkent yaptı." }, { kw: ["orhan"] }),
+      sultan(3, "murad1", "I. Murad", "Murad I", "1362–1389", { en: "Won at Kosovo in 1389.", tr: "1389'da Kosova'da zafer kazandı." }, { base: "murad", ord: 1, alt: { tr: "Hüdavendigâr", en: "" } }),
+      sultan(4, "bayezid1", "Yıldırım Bayezid", "Bayezid I", "1389–1402", { en: "\"The Thunderbolt\"; defeated by Timur at Ankara.", tr: "Ankara Savaşı'nda Timur'a yenildi." }, { base: "bayezid", ord: 1, alt: { tr: "I. Bayezid", en: "the Thunderbolt" }, kw: ["yildirim"] }),
+      sultan(5, "mehmed1", "Çelebi Mehmed", "Mehmed I", "1413–1421", { en: "Ended the Interregnum and reunited the state.", tr: "Fetret Devri'ni bitirip devleti yeniden birleştirdi." }, { base: "mehmed", ord: 1, alt: { tr: "I. Mehmed", en: "" }, kw: ["celebi mehmed"] }),
+      sultan(6, "murad2", "II. Murad", "Murad II", "1421–1444, 1446–1451", null, { base: "murad", ord: 2 }),
+      sultan(7, "mehmed2", "Fatih Sultan Mehmed", "Mehmed II", "1444–1446, 1451–1481", { en: "Conquered Istanbul on 29 May 1453.", tr: "29 Mayıs 1453'te İstanbul'u fethetti." }, { base: "mehmed", ord: 2, alt: { tr: "II. Mehmed", en: "the Conqueror" }, kw: ["fatih", "conqueror"] }),
+      sultan(8, "bayezid2", "II. Bayezid", "Bayezid II", "1481–1512", null, { base: "bayezid", ord: 2 }),
+      sultan(9, "selim1", "Yavuz Sultan Selim", "Selim I", "1512–1520", { en: "Won at Chaldiran and conquered Egypt.", tr: "Çaldıran'da kazandı, Mısır'ı fethetti." }, { base: "selim", ord: 1, alt: { tr: "I. Selim", en: "the Grim" }, kw: ["yavuz"] }),
+      sultan(10, "suleyman1", "Kanuni Sultan Süleyman", "Suleiman I", "1520–1566", { en: "The empire at its greatest extent.", tr: "Devletin en geniş sınırları." }, { base: "suleyman", ord: 1, alt: { tr: "I. Süleyman", en: "the Magnificent" }, kw: ["kanuni", "magnificent", "muhtesem"] }),
+      sultan(11, "selim2", "II. Selim", "Selim II", "1566–1574", null, { base: "selim", ord: 2 }),
+      sultan(12, "murad3", "III. Murad", "Murad III", "1574–1595", null, { base: "murad", ord: 3 }),
+      sultan(13, "mehmed3", "III. Mehmed", "Mehmed III", "1595–1603", null, { base: "mehmed", ord: 3 }),
+      sultan(14, "ahmed1", "I. Ahmed", "Ahmed I", "1603–1617", { en: "Built the Sultan Ahmed (Blue) Mosque.", tr: "Sultanahmet Camii'ni yaptırdı." }, { base: "ahmed", ord: 1 }),
+      sultan(15, "mustafa1", "I. Mustafa", "Mustafa I", "1617–1618, 1622–1623", null, { base: "mustafa", ord: 1 }),
+      sultan(16, "osman2", "Genç Osman", "Osman II", "1618–1622", null, { base: "osman", ord: 2, alt: { tr: "II. Osman", en: "" }, kw: ["genc osman"] }),
+      sultan(17, "murad4", "IV. Murad", "Murad IV", "1623–1640", { en: "Retook Baghdad in 1638.", tr: "1638'de Bağdat'ı geri aldı." }, { base: "murad", ord: 4 }),
+      sultan(18, "ibrahim", "Sultan İbrahim", "Ibrahim", "1640–1648", null, { kw: ["ibrahim"] }),
+      sultan(19, "mehmed4", "Avcı Mehmed", "Mehmed IV", "1648–1687", { en: "Reigned during the failed siege of Vienna (1683).", tr: "Başarısız Viyana kuşatması (1683) onun döneminde." }, { base: "mehmed", ord: 4, alt: { tr: "IV. Mehmed", en: "" }, kw: ["avci mehmed"] }),
+      sultan(20, "suleyman2", "II. Süleyman", "Suleiman II", "1687–1691", null, { base: "suleyman", ord: 2 }),
+      sultan(21, "ahmed2", "II. Ahmed", "Ahmed II", "1691–1695", null, { base: "ahmed", ord: 2 }),
+      sultan(22, "mustafa2", "II. Mustafa", "Mustafa II", "1695–1703", { en: "Signed the Treaty of Karlowitz (1699).", tr: "Karlofça Antlaşması (1699) onun döneminde." }, { base: "mustafa", ord: 2 }),
+      sultan(23, "ahmed3", "III. Ahmed", "Ahmed III", "1703–1730", { en: "The Tulip Era and the first Ottoman printing press.", tr: "Lale Devri ve ilk Osmanlı matbaası." }, { base: "ahmed", ord: 3 }),
+      sultan(24, "mahmud1", "I. Mahmud", "Mahmud I", "1730–1754", null, { base: "mahmud", ord: 1 }),
+      sultan(25, "osman3", "III. Osman", "Osman III", "1754–1757", null, { base: "osman", ord: 3 }),
+      sultan(26, "mustafa3", "III. Mustafa", "Mustafa III", "1757–1774", null, { base: "mustafa", ord: 3 }),
+      sultan(27, "abdulhamid1", "I. Abdülhamid", "Abdulhamid I", "1774–1789", { en: "Treaty of Küçük Kaynarca (1774).", tr: "Küçük Kaynarca Antlaşması (1774)." }, { base: "abdulhamid", ord: 1 }),
+      sultan(28, "selim3", "III. Selim", "Selim III", "1789–1807", { en: "Started the Nizam-ı Cedid military reforms.", tr: "Nizam-ı Cedid reformlarını başlattı." }, { base: "selim", ord: 3 }),
+      sultan(29, "mustafa4", "IV. Mustafa", "Mustafa IV", "1807–1808", null, { base: "mustafa", ord: 4 }),
+      sultan(30, "mahmud2", "II. Mahmud", "Mahmud II", "1808–1839", { en: "Abolished the Janissary corps in 1826.", tr: "1826'da Yeniçeri Ocağı'nı kaldırdı." }, { base: "mahmud", ord: 2 }),
+      sultan(31, "abdulmecid", "Abdülmecid", "Abdulmejid I", "1839–1861", { en: "The Tanzimat Edict of 1839.", tr: "1839 Tanzimat Fermanı." }, { kw: ["abdulmecid", "abdulmejid"] }),
+      sultan(32, "abdulaziz", "Abdülaziz", "Abdulaziz", "1861–1876", null, { kw: ["abdulaziz"] }),
+      sultan(33, "murad5", "V. Murad", "Murad V", "1876", { en: "Reigned for 93 days.", tr: "93 gün tahtta kaldı." }, { base: "murad", ord: 5 }),
+      sultan(34, "abdulhamid2", "II. Abdülhamid", "Abdulhamid II", "1876–1909", { en: "Proclaimed the first constitution in 1876.", tr: "1876'da ilk anayasayı ilan etti." }, { base: "abdulhamid", ord: 2 }),
+      sultan(35, "mehmed5", "Mehmed Reşad", "Mehmed V", "1909–1918", { en: "Sultan during the First World War.", tr: "Birinci Dünya Savaşı'ndaki padişah." }, { base: "mehmed", ord: 5, alt: { tr: "V. Mehmed", en: "" }, kw: ["resad"] }),
+      sultan(36, "mehmed6", "Mehmed Vahdeddin", "Mehmed VI", "1918–1922", { en: "The last Ottoman sultan.", tr: "Son Osmanlı padişahı." }, { last: true, base: "mehmed", ord: 6, alt: { tr: "VI. Mehmed", en: "" }, kw: ["vahdeddin"] }),
+
+      president(1, "ataturk", "Mustafa Kemal Atatürk", "1923–1938", { en: "Founder and first president of the Republic.", tr: "Cumhuriyet'in kurucusu ve ilk cumhurbaşkanı." }, { founder: true, kw: ["ataturk", "mustafa kemal"] }),
+      president(2, "inonu", "İsmet İnönü", "1938–1950", { en: "Kept Türkiye out of most of WWII; multi-party politics began.", tr: "Türkiye'yi II. Dünya Savaşı'nın dışında tuttu; çok partili hayata geçildi." }, { kw: ["inonu", "ismet pasa"] }),
+      president(3, "bayar", "Celâl Bayar", "1950–1960", null, { kw: ["celal bayar"] }),
+      president(4, "gursel", "Cemal Gürsel", "1961–1966", { en: "Head of state from 1960.", tr: "1960'tan itibaren devlet başkanı." }),
+      president(5, "sunay", "Cevdet Sunay", "1966–1973", null),
+      president(6, "koruturk", "Fahri Korutürk", "1973–1980", null),
+      president(7, "evren", "Kenan Evren", "1982–1989", { en: "Head of state from 1980.", tr: "1980'den itibaren devlet başkanı." }),
+      president(8, "ozal", "Turgut Özal", "1989–1993", null),
+      president(9, "demirel", "Süleyman Demirel", "1993–2000", null, { kw: ["demirel"] }),
+      president(10, "sezer", "Ahmet Necdet Sezer", "2000–2007", null),
+      president(11, "gul", "Abdullah Gül", "2007–2014", null),
+      president(12, "erdogan", "Recep Tayyip Erdoğan", { en: "2014–present", tr: "2014–günümüz" }, { en: "First president chosen by direct popular vote (2014).", tr: "Halk tarafından doğrudan seçilen ilk cumhurbaşkanı (2014)." })
+    ];
+    const leaderById = Object.fromEntries(LEADERS.map(l => [l.id, l]));
+    const eraById = Object.fromEntries(ERAS.map(e => [e.id, e]));
+
+    /* =========================================================
+       3) SAYFAYI OLUŞTUR: tarih şeridi, dönem kartları, lider kartları
+       ========================================================= */
+    const romans = ["", "I", "II", "III", "IV", "V", "VI"];
+
+    document.getElementById("year-strip").innerHTML = ERAS.map(e =>
+      `<li><a href="#era-${e.id}" data-go-era="${e.id}">${bi(e.short)}</a></li>`).join("");
+
+    document.getElementById("era-list").innerHTML = ERAS.map(e => `
+      <li class="era" id="era-${e.id}">
+        <article class="era-card">
+          <span class="era-date">${bi(e.date)}</span>
+          <h3>${bi(e.title)}</h3>
+          <p class="era-lead">${bi(e.lead)}</p>
+          ${e.body.map(p => `<p class="era-body">${bi(p)}</p>`).join("")}
+          <ul class="era-facts">${e.facts.map(f => `<li>${bi(f)}</li>`).join("")}</ul>
+          ${e.leaders.length ? `<div class="era-leaders"><span class="mini-label">${bi({ en: "Leaders:", tr: "Liderler:" })}</span>${e.leaders.map(id => `<button type="button" class="chip" data-go-leader="${id}">${bi(leaderById[id].name)}</button>`).join("")}</div>` : ""}
+        </article>
+      </li>`).join("");
+
+    // Madalyondaki harfler: unvanları atla, ilk ve son kelimenin baş harfi
+    const TITLE_WORDS = ["han", "kağan", "bey", "şah", "yabgu", "tigin", "gazi", "sultan", "kanuni", "fatih", "yavuz", "yıldırım", "çelebi", "genç", "avcı", "kutalmışoğlu"];
+    function initialsFor(leader) {
+      if (leader.base) return leader.base.split(" ").map(w => w[0]).join("").toLocaleUpperCase("tr");
+      const words = leader.name.tr.split(/\s+/).filter(w => !/^[IVX]+\.$/.test(w) && !TITLE_WORDS.includes(w.toLocaleLowerCase("tr")));
+      const letters = words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0][0];
+      return letters.toLocaleUpperCase("tr");
+    }
+
+    document.getElementById("leader-grid").innerHTML = LEADERS.map(l => {
+      const state = STATES[l.state];
+      const medal = l.img
+        ? `<img src="${escapeHtml(l.img)}" alt="">`
+        : `<span><span class="medal-initials">${escapeHtml(initialsFor(l))}</span>${l.ord ? `<span class="medal-roman">${romans[l.ord]}</span>` : ""}</span>`;
+      const altText = l.alt && (l.alt.en || l.alt.tr) ? `<p class="leader-alt">${l.alt.en ? `<span lang="en">${escapeHtml(l.alt.en)}</span>` : ""}${l.alt.tr ? `<span lang="tr">${escapeHtml(l.alt.tr)}</span>` : ""}</p>` : "";
+      return `
+        <article class="leader" id="leader-${l.id}" data-state="${l.state}">
+          <div class="medal" style="--tint:${state.tint}" aria-hidden="true">${medal}${l.n ? `<span class="medal-num">${l.n}</span>` : ""}</div>
+          <h3>${bi(l.name)}</h3>
+          ${altText}
+          <p class="leader-reign">${bi(l.reign)}</p>
+          ${l.note ? `<p class="leader-note">${bi(l.note)}</p>` : ""}
+          <p class="leader-state">${bi(state)}</p>
+        </article>`;
+    }).join("");
+
+    // Devlet sekmeleri
+    const tabsEl = document.getElementById("leader-tabs");
+    tabsEl.innerHTML = `<button type="button" data-tab="all" aria-pressed="true">${bi({ en: "All", tr: "Hepsi" })}</button>` +
+      Object.entries(STATES).map(([key, s]) => `<button type="button" data-tab="${key}" aria-pressed="false">${bi(s)}</button>`).join("");
+    const leaderCards = [...document.querySelectorAll(".leader")];
+    function setTab(tab) {
+      tabsEl.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.tab === tab)));
+      leaderCards.forEach(card => { card.hidden = tab !== "all" && card.dataset.state !== tab; });
+    }
+    tabsEl.addEventListener("click", event => {
+      const button = event.target.closest("[data-tab]");
+      if (button) setTab(button.dataset.tab);
+    });
+
+    /* =========================================================
+       4) DİL DÜĞMESİ (seçim tarayıcıda hatırlanıyor)
+       ========================================================= */
+    const guideInput = document.getElementById("guide-input");
+    function setLang(language) {
+      document.body.dataset.lang = language;
+      document.documentElement.lang = language;
+      document.querySelectorAll("[data-set-lang]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.setLang === language)));
+      guideInput.placeholder = language === "tr" ? "Bir soru yaz, ör. Malazgirt ne zaman?" : "Ask something, e.g. When was Manzikert?";
+      try { localStorage.setItem("history-lang", language); } catch (error) { /* gizli sekme vb. */ }
+      renderChips();
+      drawMap();
+      drawHeroMap();
+    }
+    document.querySelectorAll("[data-set-lang]").forEach(b => b.addEventListener("click", () => setLang(b.dataset.setLang)));
+
+    /* =========================================================
+       5) KAYDIRMA: üst çubuk ve menü
+       ========================================================= */
+    const nav = document.getElementById("nav");
+    const progressBar = document.getElementById("progress");
+    let lastScrollY = window.scrollY, scrollTicking = false;
+    function onScroll() {
+      const y = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+      nav.classList.toggle("scrolled", y > 40);
+      nav.classList.toggle("hidden", y > lastScrollY && y > 500);
+      lastScrollY = y;
+      updateHistoryEra();
+      scrollTicking = false;
+    }
+    window.addEventListener("scroll", () => {
+      if (!scrollTicking) { scrollTicking = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add("visible"); revealObserver.unobserve(entry.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll("[data-reveal]").forEach(el => revealObserver.observe(el));
+
+    /* =========================================================
+       6) HARİTA
+       ========================================================= */
+    const COSK = Math.cos(40 * Math.PI / 180);
+    // Kara noktaları: 0,5 derecelik ızgara (her satırda deniz/kara uzunlukları, 36'lık sayıyla)
+    const LAND = "0.1i.1.1k.1.1p|0.1h.1.3b|0.3v.1.x|0.4s.1|0.4q.3|0.4p.2.2|0.4n.2.4|0.4d.1.7.1.7|0.4d.1.f|0.2m.1.1a.1.v|0.4t|0.k.1.48|0.n.1.3b.1.t|0.16.2.27.1.1d|0.16.1.29.1.f.1.w|0.o.3.42|0.v.4.g.1.6.2.35|0.i.2.8.4.k.1.2.8.d.2.1.1.p.2.3.5.1m|0.h.7.2.6.m.9.b.1.1.3.p.1.e.2.1g|0.g.6.5.5.j.b.c.5.p.1.1w|0.g.8.3.4.k.8.e.7.o.1.1w|0.e.a.1.8.h.7.g.6.2m|0.e.l.g.7.f.5.2n|0.e.m.g.7.h.1.2o|0.c.r.d.8.35|0.b.t.c.a.1c.3.1o|0.d.a.1.2.1.d.d.8.1.2.1u.1.16|0.d.7.9.b.e.b.30|0.e.1.h.2.2.1.i.b.2z|0.4.a.w.1.a.5.33|0.2.7.1a.7.33|0.3.7.19.9.31|0.3.6.19.a.31|0.5.4.e.1.h.2.b.a.31|0.3.1.2.5.17.a.31|0.3.8.10.1.8.8.31|0.2.b.19.6.2k.1.g|f.3.3.4.4.40|s.41|4.1.n.41|6.2.d.4.3.41|s.41|s.41|r.42|r.42|0.3.n.43|0.5.l.43|0.a.f.44|0.e.2.33.1.19|0.1i.1.3a|0.1g.1.1.3.38";
+    const landDots = [];
+    LAND.split("|").forEach((row, r) => {
+      let col = 0, isLand = false;
+      row.split(".").forEach(chunk => {
+        const n = parseInt(chunk, 36);
+        if (isLand) for (let i = 0; i < n; i++) landDots.push([22 + (col + i) * 0.5, 55 - r * 0.5]);
+        col += n;
+        isLand = !isLand;
+      });
+    });
+
+    const PLACES = {
+      altai:     { lon: 88,    lat: 49.5,  side: "r", en: "Altai Mountains",     tr: "Altay Dağları" },
+      otuken:    { lon: 101,   lat: 47.7,  side: "l", en: "Ötüken",              tr: "Ötüken" },
+      orkhon:    { lon: 102.8, lat: 47.6,  side: "r", en: "Orkhon Inscriptions", tr: "Orhun Yazıtları" },
+      orduBalik: { lon: 102.7, lat: 47.4,  side: "r", en: "Ordu-Baliq",          tr: "Ordu-Balık" },
+      balasagun: { lon: 75.3,  lat: 42.75, side: "r", en: "Balasagun",           tr: "Balasagun" },
+      kashgar:   { lon: 76,    lat: 39.47, side: "r", en: "Kashgar",             tr: "Kaşgar" },
+      merv:      { lon: 61.8,  lat: 37.6,  side: "r", en: "Merv",                tr: "Merv" },
+      malazgirt: { lon: 42.5,  lat: 39.15, side: "r", en: "Manzikert",           tr: "Malazgirt" },
+      konya:     { lon: 32.5,  lat: 37.87, side: "b", en: "Konya",               tr: "Konya" },
+      sogut:     { lon: 30.18, lat: 40.02, side: "b", en: "Söğüt",               tr: "Söğüt" },
+      istanbul:  { lon: 28.98, lat: 41.01, side: "t", en: "Istanbul",            tr: "İstanbul" },
+      canakkale: { lon: 26.4,  lat: 40.15, side: "l", en: "Gallipoli",           tr: "Çanakkale" },
+      samsun:    { lon: 36.33, lat: 41.29, side: "r", en: "Samsun",              tr: "Samsun" },
+      ankara:    { lon: 32.86, lat: 39.93, side: "b", en: "Ankara",              tr: "Ankara" },
+      baku:      { lon: 49.87, lat: 40.41, side: "r", en: "Baku",                tr: "Bakü" },
+      ashgabat:  { lon: 58.38, lat: 37.95, side: "b", en: "Ashgabat",            tr: "Aşkabat" },
+      tashkent:  { lon: 69.24, lat: 41.3,  side: "l", en: "Tashkent",            tr: "Taşkent" },
+      bishkek:   { lon: 74.6,  lat: 42.87, side: "r", en: "Bishkek",             tr: "Bişkek" },
+      astana:    { lon: 71.43, lat: 51.17, side: "r", en: "Astana",              tr: "Astana" }
+    };
+    const ROUTE = ["altai", "otuken", "orkhon", "orduBalik", "balasagun", "kashgar", "merv", "malazgirt", "konya", "sogut", "istanbul", "samsun", "ankara"];
+    const OVERVIEW = { cam: [65, 42.5, 88], route: null, show: [] };
+
+    const routePts = ROUTE.map(key => PLACES[key]);
+    const cumLen = [0];
+    for (let i = 1; i < routePts.length; i++) {
+      const a = routePts[i - 1], b = routePts[i];
+      cumLen.push(cumLen[i - 1] + Math.hypot((b.lon - a.lon) * COSK, b.lat - a.lat));
+    }
+    const routeLengthTo = key => key ? cumLen[ROUTE.indexOf(key)] : 0;
+
+    const mapCanvas = document.getElementById("history-map");
+    const mapCtx = mapCanvas.getContext("2d");
+    const mapHud = document.getElementById("map-hud");
+    const hudOverview = document.getElementById("hud-overview");
+    const eraEls = [...document.querySelectorAll(".era")];
+    const landCanvas = document.createElement("canvas");
+    const landCtx = landCanvas.getContext("2d");
+    let landKey = "";
+
+    const cam = { lon: OVERVIEW.cam[0], lat: OVERVIEW.cam[1], span: OVERVIEW.cam[2] };
+    let camFrom = { ...cam }, camTo = { ...cam }, flightT = 1, flightStart = 0;
+    let routeFrom = 0, routeTarget = 0, routeDrawn = 0;
+    let activeEra = -1, currentMap = OVERVIEW;
+    let mapW = 0, mapH = 0, mapVisible = false, mapLoopRunning = false;
+    const FLIGHT_MS = 1400;
+
+    function project(lon, lat, c = cam, w = mapW, h = mapH) {
+      const pxPerDeg = w / c.span;
+      return [w / 2 + (lon - c.lon) * pxPerDeg, h / 2 + (c.lat - lat) * pxPerDeg / COSK];
+    }
+
+    function sizeCanvas(canvas, ctx) {
+      const r = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(r.width * dpr);
+      canvas.height = Math.round(r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return [r.width, r.height];
+    }
+
+    function resizeMap() {
+      [mapW, mapH] = sizeCanvas(mapCanvas, mapCtx);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      landCanvas.width = Math.round(mapW * dpr);
+      landCanvas.height = Math.round(mapH * dpr);
+      landCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      landKey = "";
+      drawMap();
+    }
+
+    function drawLand() {
+      const moving = flightT < 1;   // hareket ederken hızlı kare noktalar, durunca yuvarlak
+      const key = `${cam.lon.toFixed(3)},${cam.lat.toFixed(3)},${cam.span.toFixed(3)},${mapW},${mapH},${activeEra},${moving}`;
+      if (key !== landKey) {
+        landKey = key;
+        landCtx.clearRect(0, 0, mapW, mapH);
+        const radius = clamp(0.5 * (mapW / cam.span) * 0.28, 0.6, 2.6);
+        const active = currentMap.show.map(k => PLACES[k]);
+        const buckets = [[], [], []];
+        for (const [lon, lat] of landDots) {
+          const [x, y] = project(lon, lat);
+          if (x < -4 || y < -4 || x > mapW + 4 || y > mapH + 4) continue;
+          let near = 99;
+          for (const p of active) near = Math.min(near, Math.hypot((lon - p.lon) * COSK, lat - p.lat));
+          buckets[near < 2.5 ? 2 : near < 6.5 ? 1 : 0].push(x, y);
+        }
+        ["rgba(140, 165, 230, 0.26)", "rgba(175, 195, 255, 0.5)", "rgba(245, 197, 66, 0.7)"].forEach((color, b) => {
+          const pts = buckets[b];
+          landCtx.fillStyle = color;
+          if (moving) {
+            const size = radius * 1.7;
+            for (let i = 0; i < pts.length; i += 2) landCtx.fillRect(pts[i] - size / 2, pts[i + 1] - size / 2, size, size);
+          } else {
+            landCtx.beginPath();
+            for (let i = 0; i < pts.length; i += 2) {
+              landCtx.moveTo(pts[i] + radius, pts[i + 1]);
+              landCtx.arc(pts[i], pts[i + 1], radius, 0, Math.PI * 2);
+            }
+            landCtx.fill();
+          }
+        });
+      }
+      mapCtx.drawImage(landCanvas, 0, 0, mapW, mapH);
+    }
+
+    function drawRoute() {
+      if (routeDrawn <= 0.0001) return null;
+      mapCtx.save();
+      if (currentMap.links) mapCtx.globalAlpha = 0.4;
+      mapCtx.lineWidth = 2.5; mapCtx.lineJoin = "round"; mapCtx.lineCap = "round";
+      mapCtx.strokeStyle = "#F5C542"; mapCtx.shadowColor = "rgba(245, 197, 66, 0.75)"; mapCtx.shadowBlur = 12;
+      mapCtx.beginPath();
+      let head = project(routePts[0].lon, routePts[0].lat);
+      mapCtx.moveTo(head[0], head[1]);
+      for (let i = 1; i < routePts.length; i++) {
+        const a = routePts[i - 1], b = routePts[i];
+        if (routeDrawn >= cumLen[i]) {
+          head = project(b.lon, b.lat);
+        } else {
+          const t = (routeDrawn - cumLen[i - 1]) / (cumLen[i] - cumLen[i - 1]);
+          head = project(a.lon + (b.lon - a.lon) * t, a.lat + (b.lat - a.lat) * t);
+          mapCtx.lineTo(head[0], head[1]);
+          break;
+        }
+        mapCtx.lineTo(head[0], head[1]);
+      }
+      mapCtx.stroke();
+      mapCtx.restore();
+      return head;
+    }
+
+    function drawLabel(ctx, text, x, y, side, w) {
+      ctx.font = `600 ${w < 500 ? 12 : 14}px "Bricolage Grotesque", system-ui, sans-serif`;
+      const tw = ctx.measureText(text).width;
+      let lx = x + 12, ly = y + 4;
+      if (side === "l") lx = x - 12 - tw;
+      if (side === "t") { lx = x - tw / 2; ly = y - 14; }
+      if (side === "b") { lx = x - tw / 2; ly = y + 22; }
+      lx = clamp(lx, 6, w - tw - 6);
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "rgba(7, 11, 31, 0.85)";
+      ctx.strokeText(text, lx, ly);
+      ctx.fillStyle = "#EEF1FA";
+      ctx.fillText(text, lx, ly);
+    }
+
+    function drawMap(now = performance.now()) {
+      if (!mapW) return;
+      mapCtx.clearRect(0, 0, mapW, mapH);
+      drawLand();
+      if (currentMap.links) {
+        const [ax, ay] = project(PLACES.ankara.lon, PLACES.ankara.lat);
+        mapCtx.save();
+        mapCtx.setLineDash([4, 6]);
+        mapCtx.lineDashOffset = reduceMotion ? 0 : -now / 40;
+        mapCtx.strokeStyle = "rgba(245, 197, 66, 0.6)";
+        mapCtx.lineWidth = 1.5;
+        currentMap.show.filter(k => k !== "ankara").forEach(k => {
+          const [x, y] = project(PLACES[k].lon, PLACES[k].lat);
+          mapCtx.beginPath(); mapCtx.moveTo(ax, ay);
+          mapCtx.quadraticCurveTo((ax + x) / 2, Math.min(ay, y) - 40, x, y);
+          mapCtx.stroke();
+        });
+        mapCtx.restore();
+      }
+      const head = drawRoute();
+      mapCtx.fillStyle = "#F5C542";
+      ROUTE.forEach((key, i) => {
+        if (cumLen[i] <= routeDrawn + 0.01 && !currentMap.show.includes(key)) {
+          const [x, y] = project(PLACES[key].lon, PLACES[key].lat);
+          mapCtx.beginPath(); mapCtx.arc(x, y, 2.5, 0, Math.PI * 2); mapCtx.fill();
+        }
+      });
+      const pulse = reduceMotion ? 0.35 : (now % 1800) / 1800;
+      currentMap.show.forEach(key => {
+        const p = PLACES[key];
+        const [x, y] = project(p.lon, p.lat);
+        mapCtx.strokeStyle = `rgba(245, 197, 66, ${1 - pulse})`;
+        mapCtx.lineWidth = 1.5;
+        mapCtx.beginPath(); mapCtx.arc(x, y, 6 + pulse * 14, 0, Math.PI * 2); mapCtx.stroke();
+        mapCtx.fillStyle = "#F5C542";
+        mapCtx.beginPath(); mapCtx.arc(x, y, 5, 0, Math.PI * 2); mapCtx.fill();
+        mapCtx.fillStyle = "#FFF3C4";
+        mapCtx.beginPath(); mapCtx.arc(x, y, 2, 0, Math.PI * 2); mapCtx.fill();
+        drawLabel(mapCtx, p[lang()], x, y, p.side, mapW);
+      });
+      if (head && flightT < 1) {
+        mapCtx.fillStyle = "#FFF3C4";
+        mapCtx.beginPath(); mapCtx.arc(head[0], head[1], 3.5, 0, Math.PI * 2); mapCtx.fill();
+      }
+    }
+
+    function mapFrame(now) {
+      if (flightT < 1) {
+        flightT = Math.min((now - flightStart) / FLIGHT_MS, 1);
+        const e = flightT < 0.5 ? 4 * flightT ** 3 : 1 - Math.pow(-2 * flightT + 2, 3) / 2;
+        const distance = Math.hypot(camTo.lon - camFrom.lon, camTo.lat - camFrom.lat);
+        cam.lon = camFrom.lon + (camTo.lon - camFrom.lon) * e;
+        cam.lat = camFrom.lat + (camTo.lat - camFrom.lat) * e;
+        cam.span = camFrom.span + (camTo.span - camFrom.span) * e + Math.sin(Math.PI * e) * distance * 0.35;
+        routeDrawn = routeFrom + (routeTarget - routeFrom) * e;
+      }
+      drawMap(now);
+      if (mapVisible && !reduceMotion) requestAnimationFrame(mapFrame);
+      else mapLoopRunning = false;
+    }
+    function startMapLoop() {
+      if (reduceMotion) { drawMap(); return; }
+      if (mapVisible && !mapLoopRunning) { mapLoopRunning = true; requestAnimationFrame(mapFrame); }
+    }
+
+    let hudToken = 0;
+    function updateHud(index) {
+      const token = ++hudToken;
+      mapHud.classList.add("swap");
+      setTimeout(() => {
+        if (token !== hudToken) return;
+        mapHud.textContent = "";
+        if (index >= 0) {
+          const card = eraEls[index].querySelector(".era-card");
+          mapHud.append(card.querySelector(".era-date").cloneNode(true), card.querySelector("h3").cloneNode(true));
+        } else {
+          mapHud.append(hudOverview.content.cloneNode(true));
+        }
+        mapHud.classList.remove("swap");
+      }, reduceMotion ? 0 : 230);
+    }
+
+    function setEra(index) {
+      if (index === activeEra) return;
+      activeEra = index;
+      currentMap = index >= 0 ? ERAS[index].map : OVERVIEW;
+      eraEls.forEach((el, i) => el.classList.toggle("active", i === index));
+      camFrom = { ...cam };
+      camTo = { lon: currentMap.cam[0], lat: currentMap.cam[1], span: currentMap.cam[2] };
+      routeFrom = routeDrawn;
+      routeTarget = routeLengthTo(currentMap.route);
+      landKey = "";
+      updateHud(index);
+      if (reduceMotion) {
+        Object.assign(cam, camTo); routeDrawn = routeTarget; flightT = 1; drawMap();
+      } else {
+        flightStart = performance.now(); flightT = 0; startMapLoop();
+      }
+    }
+
+    // Aktif dönem: üst kenarı "okuma çizgisini" geçen son kart
+    const readingLine = () => window.innerHeight * (phoneLayout.matches ? 0.75 : 0.62);
+    function updateHistoryEra() {
+      const line = readingLine();
+      let index = -1;
+      eraEls.forEach((el, i) => { if (el.getBoundingClientRect().top <= line) index = i; });
+      setEra(index);
+    }
+
+    new IntersectionObserver(entries => {
+      mapVisible = entries[0].isIntersecting;
+      if (mapVisible) startMapLoop();
+    }).observe(mapCanvas);
+
+    // Girişteki arka plan haritası (hareketsiz, tek sefer çizilir)
+    const heroCanvas = document.getElementById("hero-map");
+    const heroCtx = heroCanvas.getContext("2d");
+    function drawHeroMap() {
+      const [w, h] = sizeCanvas(heroCanvas, heroCtx);
+      if (!w) return;
+      heroCtx.clearRect(0, 0, w, h);
+      const heroCam = { lon: 62, lat: 43, span: w < 700 ? 60 : 80 };
+      const radius = clamp(0.5 * (w / heroCam.span) * 0.26, 0.6, 2.2);
+      heroCtx.fillStyle = "rgba(140, 165, 230, 0.3)";
+      heroCtx.beginPath();
+      for (const [lon, lat] of landDots) {
+        const [x, y] = project(lon, lat, heroCam, w, h);
+        heroCtx.moveTo(x + radius, y);
+        heroCtx.arc(x, y, radius, 0, Math.PI * 2);
+      }
+      heroCtx.fill();
+      // Tüm yol, soluk altın
+      heroCtx.save();
+      heroCtx.strokeStyle = "rgba(245, 197, 66, 0.55)";
+      heroCtx.lineWidth = 2;
+      heroCtx.setLineDash([2, 6]);
+      heroCtx.beginPath();
+      routePts.forEach((p, i) => {
+        const [x, y] = project(p.lon, p.lat, heroCam, w, h);
+        if (i === 0) heroCtx.moveTo(x, y); else heroCtx.lineTo(x, y);
+      });
+      heroCtx.stroke();
+      heroCtx.restore();
+      // Yolun başı ve sonu: altın noktalar (etiket yok, başlığın üstüne binmesin)
+      heroCtx.fillStyle = "#F5C542";
+      ["altai", "ankara"].forEach(k => {
+        const [x, y] = project(PLACES[k].lon, PLACES[k].lat, heroCam, w, h);
+        heroCtx.beginPath(); heroCtx.arc(x, y, 4, 0, Math.PI * 2); heroCtx.fill();
+      });
+    }
+
+    window.addEventListener("resize", () => { resizeMap(); drawHeroMap(); updateHistoryEra(); });
+    if (document.fonts) document.fonts.ready.then(() => { drawMap(); drawHeroMap(); });
+
+    /* =========================================================
+       7) BİR YERE GİT VE PARLAT (rehber, tarih şeridi ve lider butonları kullanıyor)
+       ========================================================= */
+    function spotlight(el) {
+      el.classList.remove("spotlight");
+      void el.offsetWidth;
+      el.classList.add("spotlight");
+      setTimeout(() => el.classList.remove("spotlight"), 3000);
+    }
+    function goToEra(id) {
+      const li = document.getElementById(`era-${id}`);
+      if (!li) return;
+      const top = window.scrollY + li.getBoundingClientRect().top - readingLine() + 24;
+      window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
+      setTimeout(() => spotlight(li.querySelector(".era-card")), reduceMotion ? 0 : 700);
+    }
+    function goToLeader(id) {
+      const leader = leaderById[id];
+      if (!leader) return;
+      setTab(leader.state);
+      const card = document.getElementById(`leader-${id}`);
+      card.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      setTimeout(() => spotlight(card), reduceMotion ? 0 : 700);
+    }
+    document.addEventListener("click", event => {
+      const eraLink = event.target.closest("[data-go-era]");
+      if (eraLink) { event.preventDefault(); goToEra(eraLink.dataset.goEra); return; }
+      const leaderLink = event.target.closest("[data-go-leader]");
+      if (leaderLink) goToLeader(leaderLink.dataset.goLeader);
+    });
+
+    /* =========================================================
+       8) TARİH REHBERİ
+       Gerçek bir yapay zekâ modeli değil: soruyu kelimelerine ayırıp
+       sayfadaki dönemler, liderler ve konularla eşleştiriyor.
+       Türkçe karakterler ve ekler için sade bir normalleştirme yapıyor.
+       ========================================================= */
+
+    // Sık sorulan konular: anahtar kelimeler, cevap ve gidilecek yer
+    const TOPICS = [
+      { kw: ["malazgirt", "manzikert"], year: 1071, go: { era: "seljuk" },
+        a: { en: "The Battle of Manzikert (Malazgirt) was fought on 26 August 1071. Sultan Alp Arslan defeated the Byzantine emperor Romanos IV Diogenes and even captured him; after it, Turkish tribes began settling across Anatolia.", tr: "Malazgirt Meydan Muharebesi 26 Ağustos 1071'de yapıldı. Sultan Alp Arslan, Bizans imparatoru IV. Romanos Diogenes'i yendi ve esir aldı; ardından Türk boyları Anadolu'ya yerleşmeye başladı." } },
+      { kw: ["istanbul fet", "istanbulun fet", "istanbul kim", "istanbulu kim", "istanbul nasil", "konstantinopolis", "constantinople", "conquest of istanbul", "conquered istanbul", "conquer istanbul", "fall of constantinople"], year: 1453, go: { leader: "mehmed2" },
+        a: { en: "Istanbul (Constantinople) was conquered on 29 May 1453 by Sultan Mehmed II, known as Fatih, \"the Conqueror\". It ended the Byzantine Empire, and Istanbul became the Ottoman capital.", tr: "İstanbul, 29 Mayıs 1453'te Fatih Sultan Mehmed (II. Mehmed) tarafından fethedildi. Bizans İmparatorluğu sona erdi ve İstanbul Osmanlı'nın başkenti oldu." } },
+      { kw: ["canakkale", "gallipoli", "gelibolu", "anzac"], year: 1915, go: { era: "war" },
+        a: { en: "The Gallipoli campaign (Çanakkale) took place in 1915–16. Ottoman forces, with Mustafa Kemal among the commanders, held the straits against an Allied landing that included Australian and New Zealand (ANZAC) troops, and the Allies withdrew in early 1916.", tr: "Çanakkale Savaşları 1915–16'da yapıldı. Komutanları arasında Mustafa Kemal'in de bulunduğu Osmanlı kuvvetleri, Avustralya ve Yeni Zelanda (ANZAC) birliklerinin de yer aldığı İtilaf çıkarmasına karşı boğazları savundu; İtilaf kuvvetleri 1916 başında çekildi." } },
+      { kw: ["lozan", "lausanne"], year: 1923, go: { era: "war" },
+        a: { en: "The Treaty of Lausanne was signed on 24 July 1923. It ended the conflict with the Allied powers and recognised the independence and borders of the new Turkish state.", tr: "Lozan Antlaşması 24 Temmuz 1923'te imzalandı. İtilaf devletleriyle savaşı resmen bitirdi ve yeni Türk devletinin bağımsızlığını ve sınırlarını tanıdı." } },
+      { kw: ["19 mayis", "samsun"], year: 1919, go: { era: "war" },
+        a: { en: "On 19 May 1919 Mustafa Kemal landed at Samsun and began organising the national resistance. The day is celebrated in Türkiye as Youth and Sports Day.", tr: "Mustafa Kemal 19 Mayıs 1919'da Samsun'a çıktı ve milli direnişi örgütlemeye başladı. Bu gün Türkiye'de Atatürk'ü Anma, Gençlik ve Spor Bayramı olarak kutlanır." } },
+      { kw: ["23 nisan", "tbmm", "meclis", "grand national assembly"], year: 1920, go: { era: "war" },
+        a: { en: "The Grand National Assembly opened in Ankara on 23 April 1920 and led the War of Independence. 23 April is celebrated as National Sovereignty and Children's Day.", tr: "Türkiye Büyük Millet Meclisi 23 Nisan 1920'de Ankara'da açıldı ve Kurtuluş Savaşı'nı yönetti. 23 Nisan, Ulusal Egemenlik ve Çocuk Bayramı olarak kutlanır." } },
+      { kw: ["sakarya", "buyuk taarruz", "great offensive", "dumlupinar", "30 agustos", "zafer bayrami"], year: 1922, go: { era: "war" },
+        a: { en: "The Battle of Sakarya (August–September 1921) stopped the Greek advance toward Ankara. The Great Offensive began on 26 August 1922, and the victory at Dumlupınar on 30 August drove Greek forces out of Anatolia; 30 August is celebrated as Victory Day.", tr: "Sakarya Meydan Muharebesi (Ağustos–Eylül 1921) Yunan ordusunun Ankara'ya ilerleyişini durdurdu. Büyük Taarruz 26 Ağustos 1922'de başladı ve 30 Ağustos'taki Başkomutanlık Meydan Muharebesi zaferi Yunan kuvvetlerini Anadolu'dan çıkardı; 30 Ağustos Zafer Bayramı olarak kutlanır." } },
+      { kw: ["29 ekim", "cumhuriyet ne zaman", "cumhuriyetin ilani", "cumhuriyet ilan", "cumhuriyet bayrami", "republic day", "republic proclaimed", "when was the republic"], year: 1923, go: { era: "republic" },
+        a: { en: "The Republic of Türkiye was proclaimed on 29 October 1923, and Mustafa Kemal Atatürk became its first president. 29 October is celebrated as Republic Day.", tr: "Türkiye Cumhuriyeti 29 Ekim 1923'te ilan edildi ve Mustafa Kemal Atatürk ilk cumhurbaşkanı oldu. 29 Ekim, Cumhuriyet Bayramı olarak kutlanır." } },
+      { kw: ["harf devrimi", "harf inkilabi", "yeni alfabe", "latin harf", "alphabet reform", "turkish alphabet", "alfabe"], year: 1928, go: { era: "republic" },
+        a: { en: "The Latin-based Turkish alphabet was adopted on 1 November 1928, replacing the Arabic script.", tr: "Latin harflerine dayalı yeni Türk alfabesi 1 Kasım 1928'de kabul edildi ve Arap harflerinin yerini aldı." } },
+      { kw: ["ortak alfabe", "common alphabet", "ortak turk alfabe"], year: 2024, go: { era: "today" },
+        a: { en: "In 2024 the members of the Organization of Turkic States agreed on a common 34-letter Latin-based Turkic alphabet.", tr: "2024'te Türk Devletleri Teşkilatı üyeleri 34 harfli, Latin harflerine dayalı ortak bir Türk alfabesi üzerinde uzlaştı." } },
+      { kw: ["kadin", "women", "secme", "suffrage", "oy hakki", "right to vote"], year: 1934, go: { era: "republic" },
+        a: { en: "Turkish women gained the right to vote in local elections in 1930 and to vote and stand in national elections on 5 December 1934.", tr: "Türk kadınları 1930'da yerel seçimlerde, 5 Aralık 1934'te de milletvekili seçimlerinde seçme ve seçilme hakkı kazandı." } },
+      { kw: ["soyadi", "surname"], year: 1934, go: { era: "republic" },
+        a: { en: "The Surname Law came into force in 1934, and the Grand National Assembly gave Mustafa Kemal the surname Atatürk.", tr: "Soyadı Kanunu 1934'te yürürlüğe girdi ve TBMM, Mustafa Kemal'e \"Atatürk\" soyadını verdi." } },
+      { kw: ["halife", "hilafet", "caliph"], year: 1924, go: { era: "republic" },
+        a: { en: "The Ottoman sultans used the title of caliph from 1517. The Grand National Assembly abolished the caliphate on 3 March 1924.", tr: "Osmanlı padişahları 1517'den itibaren halife unvanını kullandı. TBMM, halifeliği 3 Mart 1924'te kaldırdı." } },
+      { kw: ["orhun", "orkhon", "yazit", "inscription"], year: 732, go: { era: "gokturk" },
+        a: { en: "The Orkhon Inscriptions are Göktürk stone monuments in Mongolia's Orkhon valley, raised in the 720s and 730s for Tonyukuk, Kül Tigin (732) and Bilge Kağan (735). They are among the oldest known texts in a Turkic language.", tr: "Orhun Yazıtları, Moğolistan'daki Orhun vadisinde bulunan Göktürk taş anıtlarıdır; 720'ler ve 730'larda Tonyukuk, Kül Tigin (732) ve Bilge Kağan (735) için dikildi. Türkçenin bilinen en eski metinleri arasındadır." } },
+      { kw: ["tengri", "gok tanri", "sky god", "tengrism", "tengricilik"], go: { era: "homeland" },
+        a: { en: "Before Islam, many Turkic peoples honoured Tengri, the sky god, together with the spirits of nature and of their ancestors.", tr: "İslam'dan önce birçok Türk topluluğu gök tanrısı Tengri'ye inanıyor, doğadaki ruhlara ve atalarına saygı gösteriyordu." } },
+      { kw: ["islam", "muslim", "musluman"], go: { era: "karakhanid" },
+        a: { en: "The Karakhanids were the first Turkic dynasty to adopt Islam as the state religion. Their ruler Satuk Buğra Han converted around 932–934.", tr: "Karahanlılar, İslamiyet'i devlet dini olarak kabul eden ilk Türk hanedanıydı. Hükümdarları Satuk Buğra Han 932–934 civarında Müslüman oldu." } },
+      { kw: ["kutadgu", "yusuf has hacib"], year: 1069, go: { era: "karakhanid" },
+        a: { en: "Kutadgu Bilig (\"Wisdom that brings happiness\") was written by Yusuf Has Hacib of Balasagun around 1069–70, under the Karakhanids.", tr: "Kutadgu Bilig (\"Mutluluk veren bilgi\"), Karahanlılar döneminde Balasagunlu Yusuf Has Hacib tarafından 1069–70 civarında yazıldı." } },
+      { kw: ["divan", "kasgarli", "kashgari", "sozluk", "dictionary"], year: 1072, go: { era: "karakhanid" },
+        a: { en: "Divanu Lügati't-Türk is the first comprehensive dictionary of the Turkic languages, compiled by Mahmud of Kashgar (Kaşgarlı Mahmud) in the 1070s for Arabic-speaking readers.", tr: "Divanü Lügati't-Türk, Türk dillerinin ilk kapsamlı sözlüğüdür; Kaşgarlı Mahmud tarafından 1070'lerde Arapça konuşan okurlar için yazıldı." } },
+      { kw: ["kosedag", "kose dag", "mogol", "mongol"], year: 1243, go: { era: "rum" },
+        a: { en: "At the Battle of Kösedağ in 1243 the Mongols defeated the Anatolian Seljuks, who then became vassals of the Ilkhanate. The state ended in 1308.", tr: "1243 Kösedağ Savaşı'nda Moğollar Anadolu Selçuklularını yendi; sultanlar İlhanlılara bağlandı. Devlet 1308'de sona erdi." } },
+      { kw: ["dandanakan", "dandanaqan"], year: 1040, go: { era: "seljuk" },
+        a: { en: "At the Battle of Dandanakan in 1040, near Merv, the Seljuks defeated the Ghaznavid ruler Mesud I and established their empire in Khorasan.", tr: "1040 Dandanakan Savaşı'nda, Merv yakınlarında, Selçuklular Gazneli hükümdarı I. Mesud'u yendi ve Horasan'da devletlerini kurdu." } },
+      { kw: ["viyana", "vienna"], go: { era: "ottoman" },
+        a: { en: "The Ottomans besieged Vienna twice: in 1529 under Suleiman the Magnificent and in 1683. The failed second siege began a long Ottoman retreat in Europe.", tr: "Osmanlılar Viyana'yı iki kez kuşattı: 1529'da Kanuni döneminde ve 1683'te. Başarısız ikinci kuşatma, Avrupa'da uzun bir gerilemenin başlangıcı oldu." } },
+      { kw: ["tanzimat", "mesrutiyet", "anayasa", "constitution", "jon turk", "young turk"], year: 1839, go: { era: "ottoman" },
+        a: { en: "The Ottoman reform era began with the Tanzimat Edict of 1839. The first constitution came in 1876, and the Young Turk Revolution restored it in 1908.", tr: "Osmanlı reform dönemi 1839 Tanzimat Fermanı ile başladı. İlk anayasa 1876'da ilan edildi; 1908'de II. Meşrutiyet ile yeniden yürürlüğe girdi." } },
+      { kw: ["lale devri", "tulip era", "matbaa", "printing press"], year: 1727, go: { leader: "ahmed3" },
+        a: { en: "The Tulip Era (Lale Devri, 1718–1730) was a time of peace, gardens and art under Sultan Ahmed III; the first Ottoman printing press in Turkish opened in 1727.", tr: "Lale Devri (1718–1730), III. Ahmed döneminde barış, bahçeler ve sanatla anılan bir dönemdir; Türkçe yayın yapan ilk Osmanlı matbaası 1727'de açıldı." } },
+      { kw: ["yeniceri", "janissar"], year: 1826, go: { leader: "mahmud2" },
+        a: { en: "The Janissary corps was abolished in 1826 by Sultan Mahmud II, as part of his military reforms.", tr: "Yeniçeri Ocağı, II. Mahmud tarafından 1826'da askerî reformlarının bir parçası olarak kaldırıldı." } },
+      { kw: ["kac padisah", "kac sultan", "padisah sayisi", "how many sultans", "how many ottoman"], go: { tab: "ottoman" },
+        a: { en: "There were 36 Ottoman sultans, from Osman Gazi (around 1299) to Mehmed VI Vahdeddin, whose reign ended when the sultanate was abolished on 1 November 1922.", tr: "36 Osmanlı padişahı vardır: 1299 civarında Osman Gazi'den, saltanatın 1 Kasım 1922'de kaldırılmasıyla görevi sona eren VI. Mehmed Vahdeddin'e kadar." } },
+      { kw: ["kac cumhurbaskani", "how many presidents"], go: { tab: "republic" },
+        a: { en: "Türkiye has had 12 presidents, from Mustafa Kemal Atatürk (1923) to Recep Tayyip Erdoğan (since 2014), not counting acting presidents.", tr: "Türkiye'nin vekâleten görev yapanlar hariç 12 cumhurbaşkanı olmuştur: Mustafa Kemal Atatürk'ten (1923) Recep Tayyip Erdoğan'a (2014'ten beri)." } },
+      { kw: ["su anki cumhurbaskani", "simdiki cumhurbaskani", "bugunku cumhurbaskani", "current president"], go: { leader: "erdogan" },
+        a: { en: "Recep Tayyip Erdoğan has been President of Türkiye since 2014; he was the first president chosen by direct popular vote.", tr: "Recep Tayyip Erdoğan 2014'ten beri Türkiye Cumhurbaşkanı'dır; halk tarafından doğrudan seçilen ilk cumhurbaşkanıdır." } },
+      { kw: ["ilk cumhurbaskani", "first president"], go: { leader: "ataturk" },
+        a: { en: "The first president of the Republic of Türkiye was Mustafa Kemal Atatürk, from 1923 until his death in 1938.", tr: "Türkiye Cumhuriyeti'nin ilk cumhurbaşkanı, 1923'ten 1938'deki ölümüne kadar Mustafa Kemal Atatürk'tür." } },
+      { kw: ["turk devletleri teskilati", "organization of turkic states", "turk konseyi", "turkic council", "tdt"], year: 2009, go: { era: "today" },
+        a: { en: "The Organization of Turkic States was founded in 2009 as the Turkic Council and renamed in 2021. Members: Türkiye, Azerbaijan, Kazakhstan, Kyrgyzstan and Uzbekistan; Turkmenistan and Hungary are among the observers.", tr: "Türk Devletleri Teşkilatı 2009'da Türk Konseyi adıyla kuruldu, 2021'de adı değişti. Üyeleri Türkiye, Azerbaycan, Kazakistan, Kırgızistan ve Özbekistan; Türkmenistan ve Macaristan gözlemciler arasında." } },
+      { kw: ["ipek yolu", "silk road"], go: { era: "uyghur" },
+        a: { en: "The Uyghurs grew rich from Silk Road trade: their capital Ordu-Baliq was a walled trading city, and they sold horses to Tang China for large amounts of silk.", tr: "Uygurlar İpek Yolu ticaretiyle zenginleşti: başkentleri Ordu-Balık surlu bir ticaret şehriydi ve Çin'e yüksek miktarda ipek karşılığında at satıyorlardı." } }
+    ];
+
+    // Yazıyı sadeleştir: küçük harf, Türkçe karakterleri İngilizce karşılığına çevir, noktalamayı sil
+    const SYNONYMS = { mehmet: "mehmed", ahmet: "ahmed", bayezit: "bayezid", beyazit: "bayezid", beyazid: "bayezid", abdulhamit: "abdulhamid", abdulmecit: "abdulmecid", vahdettin: "vahdeddin", murat: "murad", mahmut: "mahmud", reshad: "resad", sultani: "sultan" };
+    function normalize(text) {
+      return text.toLocaleLowerCase("tr")
+        .replace(/[ıİ]/g, "i").replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ş/g, "s").replace(/ö/g, "o").replace(/ç/g, "c")
+        .replace(/[âà]/g, "a").replace(/[îì]/g, "i").replace(/[ûù]/g, "u").replace(/[éè]/g, "e")
+        .replace(/['’`]/g, "")
+        .replace(/(\d)([a-z])/g, "$1 $2")      // "1071de" → "1071 de" (yıl + ek)
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/).filter(Boolean)
+        .map(w => SYNONYMS[w] || w)
+        .join(" ");
+    }
+    const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const ORD_FORMS = { 1: ["1", "i", "birinci"], 2: ["2", "ii", "ikinci"], 3: ["3", "iii", "ucuncu"], 4: ["4", "iv", "dorduncu"], 5: ["5", "v", "besinci"], 6: ["6", "vi", "altinci"] };
+    const TITLE_NORMS = new Set(["han", "kagan", "bey", "sah", "yabgu", "tigin", "gazi", "sultan", "kanuni", "fatih", "yavuz", "yildirim", "celebi", "genc", "avci", "khan", "qaghan", "the", "and", "ibn", "beg"]);
+
+    // Lider anahtar kelimeleri: adlardaki kelimeler + ekstra kelimeler
+    LEADERS.forEach(l => {
+      const words = new Set();
+      [l.name.tr, l.name.en].forEach(name => normalize(name).split(" ").forEach(w => {
+        if (w.length >= 4 && !TITLE_NORMS.has(w) && !/^[ivx]+$/.test(w)) words.add(w);
+      }));
+      l.keys = [...words, ...(l.kw || []).map(normalize)];
+      l.nameKey = normalize(l.name.tr);
+    });
+    ERAS.forEach(e => { e.keys = e.kw.map(normalize).concat([normalize(e.title.en), normalize(e.title.tr)]); });
+    TOPICS.forEach(t => { t.keys = t.kw.map(normalize); });
+
+    const STATE_KEYS = {
+      rum: ["anadolu selcuklu", "turkiye selcuklu", "rum sultan", "anatolian seljuk"],
+      seljuk: ["buyuk selcuklu", "great seljuk", "selcuklu", "seljuk"],
+      huns: ["hun", "xiongnu"], gokturk: ["gokturk", "kokturk", "gok turk"], uyghur: ["uygur", "uyghur"],
+      karakhanid: ["karahanli", "karakhanid"], ottoman: ["osmanli", "ottoman"], republic: ["cumhuriyet", "republic", "turkiye"]
+    };
+
+    // Yazım hatalarına tolerans: bilinmeyen bir kelimeyi en yakın bilinen kelimeyle değiştir
+    // (ör. "malazgrit" → "malazgirt"). İki kelime arasındaki "düzeltme mesafesi"ni hesaplar.
+    const VOCAB = new Set();
+    [...TOPICS, ...ERAS, ...LEADERS].forEach(x => x.keys.forEach(k => k.split(" ").forEach(w => { if (w.length >= 4) VOCAB.add(w); })));
+    const VOCAB_LIST = [...VOCAB];
+    function editDistance(a, b) {
+      const row = Array.from({ length: b.length + 1 }, (_, i) => i);
+      for (let i = 1; i <= a.length; i++) {
+        let prev = row[0];
+        row[0] = i;
+        for (let j = 1; j <= b.length; j++) {
+          const temp = row[j];
+          row[j] = Math.min(row[j] + 1, row[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1));
+          prev = temp;
+        }
+      }
+      return row[b.length];
+    }
+    function correctTypos(text) {
+      return normalize(text).split(" ").map(word => {
+        if (word.length < 4 || /^\d+$/.test(word) || VOCAB.has(word) || VOCAB_LIST.some(v => word.startsWith(v))) return word;
+        const limit = word.length >= 7 ? 2 : 1;
+        let best = word, bestDistance = limit + 1;
+        for (const v of VOCAB_LIST) {
+          if (Math.abs(v.length - word.length) > limit + 3) continue;
+          // Ekli kelimeler için: sözcüğün başını, bilinen kelimenin uzunluğu kadar karşılaştır
+          const d = Math.min(editDistance(word, v), editDistance(word.slice(0, v.length), v));
+          if (d < bestDistance) { best = v; bestDistance = d; }
+        }
+        return best;
+      }).join(" ");
+    }
+
+    function understand(question, corrected = false) {
+      const nq = " " + normalize(question) + " ";
+      const has = key => key && new RegExp("(^|\\s)" + escapeRe(key)).test(nq);
+      const years = (nq.match(/\s(\d{3,4})(?=\s)/g) || []).map(Number).map(y => /\s(mo|bc)\s/.test(nq) ? -y : y);
+      const whoIntent = /\s(kim|kimdir|kimdi|kimin|who|whom|lider|leader|padisah|sultan|kagan|han|khan|hukumdar|ruler|cumhurbaskani|president)/.test(nq);
+      const founderIntent = /\s(kurdu|kurucu|kurucusu|kurulus|founded|founder|found)/.test(nq);
+      const lastIntent = /\s(son|last)\s/.test(nq);
+      if (/^\s*(merhaba|selam|hello|hi|hey|gunaydin|iyi aksamlar)\s*$/.test(nq)) return { type: "hello" };
+
+      // Soruda hangi devlet geçiyor?
+      let stateInQuestion = null;
+      for (const [state, keys] of Object.entries(STATE_KEYS)) {
+        if (keys.some(has)) { stateInQuestion = state; break; }
+      }
+
+      const results = [];
+      TOPICS.forEach(t => {
+        let s = 0;
+        t.keys.forEach(k => { if (has(k)) s += 5 + k.split(" ").length; });
+        if (t.year && years.includes(t.year)) s += 6;
+        if (s) results.push({ type: "topic", item: t, score: s + 0.5 });
+      });
+      ERAS.forEach(e => {
+        // Dönemlerde en iyi eşleşen kelime sayılır (genel kelimeler özel konuları ezmesin)
+        const matched = e.keys.filter(has).map(k => 3 + k.split(" ").length);
+        let s = matched.length ? Math.max(...matched) + (matched.length - 1) * 0.5 : 0;
+        years.forEach(y => { if (y >= e.range[0] && y <= e.range[1]) s += (e.range[1] - e.range[0] < 120 ? 3 : 2); });
+        if (stateInQuestion && STATES[stateInQuestion] && STATES[stateInQuestion].era === e.id) s += 2;
+        if (s) results.push({ type: "era", item: e, score: s });
+      });
+      LEADERS.forEach(l => {
+        let s = 0;
+        l.keys.forEach(k => { if (has(k)) s += 3 + k.split(" ").length; });
+        if (l.base && l.ord) {
+          const forms = ORD_FORMS[l.ord].map(escapeRe).join("|");
+          const base = escapeRe(l.base);
+          if (new RegExp(`(^|\\s)(${forms})\\s+${base}|(^|\\s)${base}\\w*\\s+(${forms})(\\s|$)`).test(nq)) s += 9;
+        }
+        if (has(l.nameKey)) s += 4;
+        if (founderIntent && l.founder && stateInQuestion === l.state) s += 10;
+        if (lastIntent && l.last && stateInQuestion === l.state) s += 10;
+        if (s && whoIntent) s += 2;
+        if (s) results.push({ type: "leader", item: l, score: s });
+      });
+
+      if (!results.length) {
+        // Hiçbir şey bulunamadıysa yazım hatalarını düzeltip bir kez daha dene
+        if (!corrected) {
+          const fixed = correctTypos(question);
+          if (fixed !== normalize(question)) return understand(fixed, true);
+        }
+        return { type: "none" };
+      }
+      results.sort((a, b) => b.score - a.score);
+      const best = results[0];
+      // Aynı puanı alan birden fazla lider varsa (ör. "Mehmed") hangisi olduğunu sor
+      if (best.type === "leader") {
+        const tied = results.filter(r => r.type === "leader" && r.score === best.score);
+        if (tied.length > 1) return { type: "choose", options: tied.map(r => r.item) };
+      }
+      return best;
+    }
+
+    const T = {
+      hello: { en: "Hi! I'm the history guide. Ask me about any state, battle or leader on this page, and I'll answer and take you there.", tr: "Merhaba! Ben tarih rehberiyim. Bu sayfadaki herhangi bir devlet, savaş ya da lider hakkında sor; cevaplayıp seni oraya götüreyim." },
+      going: { en: "Taking you there…", tr: "Seni oraya götürüyorum…" },
+      again: { en: "Show me again", tr: "Tekrar göster" },
+      choose: { en: "Several leaders match. Which one do you mean?", tr: "Birden fazla lider eşleşti. Hangisini kastediyorsun?" },
+      none: { en: "I couldn't find that on this page. Try asking about a state, a battle, a date or a leader, for example:", tr: "Bunu bu sayfada bulamadım. Bir devlet, savaş, tarih ya da lider hakkında sormayı dene, örneğin:" },
+      sultanNo: { en: n => `The ${n}${n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th"} Ottoman sultan.`, tr: n => `${n}. Osmanlı padişahı.` },
+      presidentNo: { en: n => `The ${n}${n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th"} president of Türkiye.`, tr: n => `Türkiye'nin ${n}. cumhurbaşkanı.` }
+    };
+    const SUGGESTIONS = {
+      en: ["Who founded the Göktürks?", "When was the Battle of Manzikert?", "Who conquered Istanbul?", "What is the Treaty of Lausanne?", "Who was Atatürk?"],
+      tr: ["Göktürkleri kim kurdu?", "Malazgirt Savaşı ne zaman?", "İstanbul'u kim fethetti?", "Lozan Antlaşması nedir?", "Atatürk kimdir?"]
+    };
+
+    // Soru hangi dilde? Türkçe harf ya da Türkçe soru kelimesi varsa Türkçe cevap ver
+    // (İngilizce soru kelimeleri önce bakılır: "Göktürks" gibi adlardaki ü harfi yanıltmasın)
+    function questionLang(question) {
+      const n = " " + normalize(question) + " ";
+      if (/\s(who|what|when|where|why|how|which|tell)\s/.test(n)) return "en";
+      if (/\s(ne|kim|kimdir|nedir|zaman|hangi|nerede|neden|nasil|kac|mi|mu|oldu|var|yil)\s/.test(n)) return "tr";
+      if (/[çğıöşüİ]/i.test(question)) return "tr";
+      if (/\s(the|was|is|did|of)\s/.test(n)) return "en";
+      return lang();
+    }
+
+    function answerFor(result, l = lang()) {
+      if (result.type === "topic") return { text: result.item.a[l], go: result.item.go };
+      if (result.type === "era") {
+        const e = result.item;
+        return { text: `${e.title[l]} (${e.date[l]}). ${e.lead[l]} ${e.facts[0][l]}.`, go: { era: e.id } };
+      }
+      if (result.type === "leader") {
+        const p = result.item;
+        const alt = p.alt && p.alt[l] ? ` (${p.alt[l]})` : "";
+        const no = p.state === "ottoman" ? " " + T.sultanNo[l](p.n) : p.state === "republic" ? " " + T.presidentNo[l](p.n) : "";
+        return { text: `${p.name[l]}${alt}: ${STATES[p.state][l]}, ${pick(p.reign)}.${no}${p.note ? " " + p.note[l] : ""}`, go: { leader: p.id } };
+      }
+      return null;
+    }
+
+    // --- Rehber arayüzü ---
+    const guide = document.getElementById("guide");
+    const launcher = document.getElementById("guide-launcher");
+    const guideDot = document.getElementById("guide-dot");
+    const log = document.getElementById("guide-log");
+    const chipsEl = document.getElementById("guide-chips");
+    let guideStarted = false;
+
+    function openGuide() {
+      guide.classList.add("open");
+      guide.inert = false;
+      launcher.classList.add("away");
+      launcher.setAttribute("aria-expanded", "true");
+      guideDot.hidden = true;
+      if (!guideStarted) { guideStarted = true; addMessage("bot", T.hello[lang()]); }
+      if (!phoneLayout.matches) guideInput.focus({ preventScroll: true });
+    }
+    function closeGuide(showDot = false) {
+      guide.classList.remove("open");
+      guide.inert = true;
+      launcher.classList.remove("away");
+      launcher.setAttribute("aria-expanded", "false");
+      guideDot.hidden = !showDot;
+    }
+    launcher.addEventListener("click", openGuide);
+    document.getElementById("guide-close").addEventListener("click", () => closeGuide());
+    document.querySelectorAll("[data-open-guide]").forEach(b => b.addEventListener("click", openGuide));
+    document.addEventListener("keydown", event => { if (event.key === "Escape" && guide.classList.contains("open")) closeGuide(); });
+
+    function addMessage(who, text, extra) {
+      const msg = document.createElement("div");
+      msg.className = `msg ${who}`;
+      msg.textContent = text;
+      if (extra) msg.append(extra);
+      log.append(msg);
+      log.scrollTop = log.scrollHeight;
+      return msg;
+    }
+
+    function navigate(go) {
+      if (go.era) goToEra(go.era);
+      if (go.leader) goToLeader(go.leader);
+      if (go.tab) { setTab(go.tab); document.getElementById("leaders").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" }); }
+    }
+
+    function renderChips() {
+      chipsEl.innerHTML = "";
+      SUGGESTIONS[lang()].forEach(q => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = q;
+        b.addEventListener("click", () => ask(q));
+        chipsEl.append(b);
+      });
+    }
+
+    function ask(question) {
+      if (!question.trim()) return;
+      chipsEl.hidden = true;
+      addMessage("user", question);
+      const typing = addMessage("bot", "");
+      typing.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+      setTimeout(() => {
+        typing.remove();
+        const result = understand(question);
+        const l = questionLang(question);
+        if (result.type === "hello") { addMessage("bot", T.hello[l]); return; }
+        if (result.type === "none" || result.type === "choose") {
+          const options = document.createElement("div");
+          options.className = "msg-options";
+          const list = result.type === "choose"
+            ? result.options.map(o => ({ label: o.name[l] + (o.alt && o.alt[l] ? ` (${o.alt[l]})` : ""), q: null, leader: o }))
+            : SUGGESTIONS[l].slice(0, 3).map(q => ({ label: q, q }));
+          list.forEach(item => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = item.label;
+            b.addEventListener("click", () => item.q ? ask(item.q) : showAnswer({ type: "leader", item: item.leader }, item.label, l));
+            options.append(b);
+          });
+          addMessage("bot", result.type === "choose" ? T.choose[l] : T.none[l], options);
+          return;
+        }
+        showAnswer(result, null, l);
+      }, reduceMotion ? 0 : 650);
+    }
+
+    function showAnswer(result, asked, l = lang()) {
+      if (asked) addMessage("user", asked);
+      const answer = answerFor(result, l);
+      const again = document.createElement("button");
+      again.type = "button";
+      again.className = "msg-go";
+      again.textContent = T.again[l];
+      again.addEventListener("click", () => { closeGuide(true); navigate(answer.go); });
+      addMessage("bot", answer.text, document.createElement("br"));
+      log.lastElementChild.append(again);
+      addMessage("note", T.going[l]);
+      // Cevabı okumak için kısa bir süre bekle, sonra pencereyi küçült ve oraya git
+      setTimeout(() => { closeGuide(true); navigate(answer.go); }, reduceMotion ? 300 : 1800);
+    }
+
+    function sendTyped() {
+      const q = guideInput.value;
+      guideInput.value = "";
+      ask(q);
+    }
+    document.getElementById("guide-send").addEventListener("click", sendTyped);
+    guideInput.addEventListener("keydown", event => {
+      // isComposing: Türkçe/Asya klavyelerinde harf birleştirme sırasındaki Enter'ı yok say
+      if (event.key === "Enter" && !event.isComposing) { event.preventDefault(); sendTyped(); }
+    });
+
+    /* =========================================================
+       9) BAŞLAT
+       ========================================================= */
+    let savedLang = null;
+    try { savedLang = localStorage.getItem("history-lang"); } catch (error) { /* yok say */ }
+    resizeMap();
+    setLang(savedLang || ((navigator.language || "").toLowerCase().startsWith("tr") ? "tr" : "en"));
+    updateHud(-1);
+    onScroll();
+  </script>
+</body>
+</html>
