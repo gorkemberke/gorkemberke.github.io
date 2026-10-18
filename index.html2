@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gorkem | Portfolio</title>
+  <meta name="description" content="Gorkem, IT student at UTS College. Java, Python and web projects.">
+
+  <!-- JavaScript çalışıyorsa sayfaya "js" sınıfı ekle (animasyonlar buna göre açılır) -->
+  <script>document.documentElement.classList.add("js");</script>
+
+  <!-- Yazı tipleri (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Instrument+Sans:wght@400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- ============================================================
+       CSS: SAYFANIN GÖRÜNÜŞÜ
+       ============================================================ -->
+  <style>
+    /* ---------- 1. Renkler, yazı tipleri, hareket eğrisi ----------
+       Bir rengi değiştirmek için sadece buradaki değeri değiştir. */
+    :root {
+      --night: #070B1F;        /* ana arka plan (gece laciverti) */
+      --deep: #0F1736;         /* kartların arka planı */
+      --deep-2: #18214A;
+      --panel: rgba(255, 255, 255, 0.04);
+      --stroke: rgba(255, 255, 255, 0.10);
+      --stroke-strong: rgba(255, 255, 255, 0.22);
+      --text: #EEF1FA;
+      --muted: #9AA4C4;
+      --gold: #F5C542;         /* altın: ana vurgu rengi */
+      --gold-soft: #FFE08A;
+      --gold-ink: #1A1400;     /* altın üstündeki yazı rengi */
+      --blue: #4C8DFF;
+      --orange: #FF8A3D;
+
+      --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+      --font-body: "Instrument Sans", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 76px;
+    }
+
+    /* ---------- 2. Temel ayarlar ---------- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--night);
+      overflow-x: hidden;
+    }
+    .js body.loading, body.menu-open { overflow: hidden; }
+    img, video { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+    [hidden] { display: none !important; }
+    ::selection { background: var(--gold); color: var(--gold-ink); }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; border-radius: 6px; }
+    svg.icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+    /* Ekran okuyucular için görünmez yazı */
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* Tüm sayfaya ince bir film greni */
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: 300; pointer-events: none; opacity: 0.05;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .container { width: min(1240px, 100% - 40px); margin-inline: auto; }
+    .section { padding-block: clamp(5rem, 12vw, 9rem); position: relative; scroll-margin-top: 20px; }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 700; line-height: 1; letter-spacing: -0.03em; }
+
+    /* Bölüm başlıkları: büyük başlık solda, açıklama sağda */
+    .section-head {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      gap: 1.5rem 3rem; flex-wrap: wrap; margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    }
+    .section-head h2 { font-size: clamp(3.2rem, 9vw, 7rem); line-height: 0.9; letter-spacing: -0.045em; }
+    .section-head p { max-width: 38ch; color: var(--muted); font-size: 1.1rem; }
+
+    /* ---------- 3. Açılış ekranı (yükleniyor) ---------- */
+    .preloader { display: none; }
+    .js .preloader {
+      position: fixed; inset: 0; z-index: 400; background: var(--night);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: clamp(1.5rem, 5vw, 3.5rem);
+      transition: transform 1.1s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+    .preloader.done { transform: translateY(-100%); }
+    .preloader-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; }
+    .preloader-name { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.75rem); font-weight: 700; letter-spacing: -0.02em; }
+    .preloader-count {
+      font-family: var(--font-display); font-weight: 800; color: var(--gold);
+      font-size: clamp(5rem, 22vw, 15rem); line-height: 0.8; letter-spacing: -0.05em;
+      font-variant-numeric: tabular-nums;
+    }
+    .preloader-bar { height: 2px; background: var(--stroke); margin-top: 1.5rem; }
+    .preloader-bar span { display: block; height: 100%; width: 0; background: var(--gold); }
+
+    /* ---------- 4. Kaydırma çubuğu ve imleç halkası ---------- */
+    .progress {
+      position: fixed; top: 0; left: 0; z-index: 60; height: 3px; width: 100%;
+      background: linear-gradient(90deg, var(--blue), var(--gold));
+      transform-origin: 0 50%; transform: scaleX(0);
+    }
+    .cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 250; pointer-events: none;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 1.5px solid rgba(245, 197, 66, 0.7);
+      opacity: 0; transition: opacity 0.3s, background-color 0.3s;
+    }
+    .cursor-ring.on { opacity: 1; }
+    .cursor-ring.hover { background-color: rgba(245, 197, 66, 0.1); }
+    @media (hover: none), (pointer: coarse) { .cursor-ring { display: none; } }
+
+    /* ---------- 5. Üst menü ---------- */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+      border-bottom: 1px solid transparent;
+      transition: transform 0.5s var(--ease), background-color 0.3s, border-color 0.3s;
+    }
+    .nav.scrolled { background: rgba(7, 11, 31, 0.72); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); border-color: var(--stroke); }
+    .nav.hidden { transform: translateY(-100%); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+    .logo { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; letter-spacing: -0.03em; }
+    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 14px var(--gold); }
+    .nav-links { display: flex; gap: 2.25rem; list-style: none; }
+    .nav-links a { position: relative; color: var(--muted); font-size: 0.98rem; transition: color 0.25s; }
+    .nav-links a::after {
+      content: ""; position: absolute; left: 0; bottom: -6px; width: 100%; height: 1.5px;
+      background: var(--gold); transform: scaleX(0); transform-origin: right;
+      transition: transform 0.4s var(--ease);
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+
+    /* Telefon menü butonu (iki çizgi → X) */
+    .menu-btn { display: none; position: relative; width: 44px; height: 44px; }
+    .menu-btn span { position: absolute; left: 11px; right: 11px; height: 2px; background: var(--text); transition: transform 0.4s var(--ease); }
+    .menu-btn span:nth-child(1) { top: 18px; }
+    .menu-btn span:nth-child(2) { top: 25px; }
+    .menu-btn[aria-expanded="true"] span:nth-child(1) { transform: translateY(3.5px) rotate(45deg); }
+    .menu-btn[aria-expanded="true"] span:nth-child(2) { transform: translateY(-3.5px) rotate(-45deg); }
+
+    /* Telefonda açılan tam ekran menü */
+    .mobile-menu {
+      position: fixed; inset: 0; z-index: 45; background: var(--night);
+      display: flex; align-items: center; padding: 6rem 1.5rem 2rem;
+      clip-path: circle(0% at calc(100% - 38px) 38px); visibility: hidden;
+      transition: clip-path 0.8s var(--ease), visibility 0s linear 0.8s;
+    }
+    .mobile-menu.open { clip-path: circle(150% at calc(100% - 38px) 38px); visibility: visible; transition: clip-path 0.8s var(--ease), visibility 0s; }
+    .mobile-menu ul { list-style: none; display: grid; gap: 0.25rem; }
+    .mobile-menu a {
+      display: block; font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(2.6rem, 13vw, 4rem); letter-spacing: -0.035em; line-height: 1.15;
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.5s var(--ease), transform 0.7s var(--ease), color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--gold); }
+    .mobile-menu.open a { opacity: 1; transform: none; transition-delay: calc(0.2s + var(--i) * 0.06s); }
+
+    /* ---------- 6. Butonlar ---------- */
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 1rem 1.6rem; border-radius: 999px;
+      font-weight: 600; font-size: 1rem; white-space: nowrap;
+      transition: transform 0.3s var(--ease), background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .btn-gold { background: var(--gold); color: var(--gold-ink); }
+    .btn-gold:hover { background: var(--gold-soft); box-shadow: 0 14px 44px -12px rgba(245, 197, 66, 0.75); }
+    .btn-ghost { border: 1px solid var(--stroke-strong); background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ---------- 7. Giriş bölümü (hero) ---------- */
+    .hero {
+      position: relative; isolation: isolate; overflow: hidden;
+      min-height: 100vh; min-height: 100svh;
+      display: flex; align-items: flex-end;
+      padding: calc(var(--nav-h) + 3rem) 0 clamp(2.5rem, 6vw, 4.5rem);
+    }
+    .hero-glow {
+      position: absolute; inset: -20%; z-index: -3;
+      background:
+        radial-gradient(38% 34% at 72% 34%, rgba(76, 141, 255, 0.30), transparent 70%),
+        radial-gradient(30% 28% at 18% 82%, rgba(245, 197, 66, 0.16), transparent 70%),
+        radial-gradient(25% 25% at 92% 88%, rgba(255, 138, 61, 0.12), transparent 70%);
+      animation: drift 20s ease-in-out infinite alternate;
+    }
+    @keyframes drift { to { transform: translate3d(-4%, 3%, 0) scale(1.08); } }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: -2;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      background-size: 72px 72px;
+      -webkit-mask-image: radial-gradient(ellipse 65% 60% at 65% 40%, #000 20%, transparent 75%);
+      mask-image: radial-gradient(ellipse 65% 60% at 65% 40%, #000 20%, transparent 75%);
+    }
+    /* 3B yetenek küresi (JavaScript bu tuvale çiziyor) */
+    #globe { position: absolute; z-index: -1; top: 50%; right: 3%; width: min(48vw, 640px); aspect-ratio: 1; transform: translateY(-58%); }
+
+    .status {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.45rem 1rem 0.45rem 0.8rem; margin-bottom: 1.5rem;
+      border: 1px solid var(--stroke); border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      color: var(--muted); font-size: 0.92rem;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ADE80; animation: ping 2s infinite; }
+    @keyframes ping { from { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55); } to { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); } }
+
+    /* Dev isim: her harf ayrı ayrı hareket ediyor */
+    .name {
+      font-size: clamp(5rem, 19vw, 17rem); line-height: 0.82; letter-spacing: -0.05em;
+      font-weight: 700; font-variation-settings: "wght" 700, "wdth" 100;
+      margin-left: -0.05em; display: flex;
+    }
+    .char-wrap { display: inline-block; padding-bottom: 0.06em; clip-path: inset(-60% -40% 0 -40%); }
+    .char {
+      display: inline-block;
+      transition: transform 1.3s var(--ease) calc(var(--i) * 0.07s), font-variation-settings 0.35s ease-out, color 0.35s ease-out;
+    }
+    .js .name .char { transform: translateY(110%); }
+    .js .name.in .char { transform: translateY(0); }
+
+    .hero-bottom {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 1.75rem 3rem; flex-wrap: wrap;
+      margin-top: clamp(1.25rem, 2.5vw, 2rem); padding-top: clamp(1.25rem, 2.5vw, 2rem);
+      border-top: 1px solid var(--stroke);
+    }
+    .hero-text { max-width: 36ch; font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.5; color: var(--muted); }
+    .rotator { display: inline-block; color: var(--gold); font-weight: 600; transition: opacity 0.35s, transform 0.35s var(--ease), filter 0.35s; }
+    .rotator.swap { opacity: 0; transform: translateY(-0.4em); filter: blur(4px); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+    /* Giriş yazılarının sırayla belirmesi */
+    .js .hero-fade { opacity: 0; transform: translateY(24px); transition: opacity 1s var(--ease), transform 1s var(--ease); transition-delay: var(--d, 0s); }
+    .loaded .hero-fade { opacity: 1; transform: none; }
+
+    /* ---------- 8. Kayan şeritler ---------- */
+    .band { position: relative; overflow: hidden; padding-block: 4.5rem; }
+    .marquee { width: 110%; margin-left: -5%; padding-block: 1.2rem; overflow: hidden; }
+    .marquee-track { display: flex; align-items: center; width: max-content; animation: marquee 32s linear infinite; }
+    .marquee-track > * { margin-right: 2.25rem; white-space: nowrap; line-height: 1; }
+    .marquee .word { font-family: var(--font-display); font-weight: 700; font-size: clamp(2rem, 5vw, 3.75rem); letter-spacing: -0.03em; }
+    .marquee .star { font-size: clamp(1.1rem, 2.5vw, 1.75rem); }
+    .marquee-gold { position: relative; z-index: 2; background: var(--gold); color: var(--gold-ink); transform: rotate(-2.5deg); }
+    .marquee-gold .outline { color: transparent; -webkit-text-stroke: 1.5px var(--gold-ink); }
+    .marquee-blue {
+      position: absolute; z-index: 1; top: 50%; left: -5%; margin-left: 0;
+      background: var(--deep-2); color: var(--text); border-block: 1px solid var(--stroke);
+      transform: translateY(-50%) rotate(2.5deg);
+    }
+    .marquee-blue .marquee-track { animation-direction: reverse; animation-duration: 38s; }
+    .marquee-blue .outline { color: transparent; -webkit-text-stroke: 1.5px rgba(238, 241, 250, 0.6); }
+    .marquee-blue .star { color: var(--gold); }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+
+    /* ---------- 9. Hakkımda ---------- */
+    .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(3rem, 7vw, 6rem); align-items: center; }
+    .portrait-wrap { position: relative; }
+    .portrait-frame { position: relative; aspect-ratio: 4 / 5; border-radius: 28px; overflow: hidden; background: var(--deep); border: 1px solid var(--stroke); }
+    .portrait-frame img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.14); }
+    .portrait-frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(7, 11, 31, 0.65), transparent 45%); }
+
+    /* Fotoğrafın köşesinde dönen yazılı rozet */
+    .badge {
+      position: absolute; left: -2.25rem; bottom: -2.25rem;
+      width: clamp(124px, 13vw, 160px); aspect-ratio: 1; border-radius: 50%;
+      display: grid; place-items: center; background: var(--night); border: 1px solid var(--stroke);
+    }
+    .badge-ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 22s linear infinite; }
+    .badge-ring text { font-family: var(--font-mono); font-size: 13px; fill: var(--gold); }
+    .badge-core { width: 46px; height: 46px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); display: grid; place-items: center; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .statement {
+      font-family: var(--font-display); font-weight: 600;
+      font-size: clamp(1.6rem, 3.1vw, 2.6rem); line-height: 1.22; letter-spacing: -0.02em;
+      margin-bottom: 2.5rem;
+    }
+    .statement .w { transition: opacity 0.4s; }
+    .js .statement .w { opacity: 0.18; }
+    .js .statement .w.lit { opacity: 1; }
+
+    .facts { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .fact { padding: 1.25rem; border-radius: 18px; background: var(--panel); border: 1px solid var(--stroke); }
+    .fact-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 1rem; }
+    .fact-icon.blue { background: rgba(76, 141, 255, 0.14); color: #8DB6FF; }
+    .fact-icon.gold { background: rgba(245, 197, 66, 0.14); color: var(--gold); }
+    .fact-icon.orange { background: rgba(255, 138, 61, 0.14); color: #FFA769; }
+    .fact-label { display: block; color: var(--muted); font-size: 0.9rem; }
+    .fact-value { font-weight: 600; line-height: 1.35; }
+
+    /* ---------- 10. Projeler ---------- */
+    .project-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+    .project.featured { grid-column: 1 / -1; }
+    .project-inner {
+      position: relative; height: 100%; overflow: hidden;
+      border-radius: 26px; background: var(--deep); border: 1px solid var(--stroke);
+      transition: transform 0.6s var(--ease), border-color 0.3s;
+    }
+    .project-inner:hover { border-color: rgba(245, 197, 66, 0.4); transition: transform 0.15s ease-out, border-color 0.3s; }
+    /* Fareyi takip eden parlama */
+    .project-inner::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+      background: radial-gradient(520px circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.11), transparent 42%);
+    }
+    .project-inner:hover::after { opacity: 1; }
+    .project-media { aspect-ratio: 16 / 10; overflow: hidden; background: var(--deep-2); }
+    .project-media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease); }
+    .project-inner:hover .project-media img { transform: scale(1.06); }
+    .project-body { padding: 1.75rem; }
+    .project h3 { font-size: clamp(1.6rem, 2.6vw, 2.1rem); margin-bottom: 0.6rem; line-height: 1.1; }
+    .project p { color: var(--muted); }
+    .featured .project-inner { display: grid; grid-template-columns: 1.35fr 1fr; }
+    .featured .project-media { aspect-ratio: auto; min-height: 440px; }
+    .featured .project-body { display: flex; flex-direction: column; justify-content: center; padding: clamp(2rem, 4vw, 3.5rem); }
+    .featured h3 { font-size: clamp(2.2rem, 4vw, 3.3rem); }
+    /* Java projesi için terminal görünümü */
+    .terminal { position: relative; height: 100%; overflow: hidden; background: #0A0F24; font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.7; color: #C9D3EE; }
+    .terminal-bar { padding: 0.55rem 1.25rem; font-size: 0.72rem; color: var(--muted); background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid var(--stroke); }
+    .terminal-body { padding: 1rem 1.25rem; }
+    .terminal .ln { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .terminal .cmd { color: var(--muted); }
+    .terminal .title { color: var(--gold); font-weight: 500; }
+    .terminal .input { color: #4ADE80; }
+    .terminal .hl { color: #FFA769; }
+    .terminal .num { color: var(--gold); font-weight: 500; }
+    .terminal::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3rem; background: linear-gradient(transparent, #0A0F24); pointer-events: none; }
+    .js .terminal .ln { opacity: 0; transform: translateX(-8px); transition: opacity 0.35s, transform 0.35s var(--ease); }
+    .js .terminal.run .ln { opacity: 1; transform: none; transition-delay: calc(var(--n) * 0.16s); }
+
+    .tags { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.1rem; }
+    .tag { font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.8rem; border-radius: 999px; border: 1px solid; }
+    .tag-web { color: #8DB6FF; border-color: rgba(76, 141, 255, 0.4); background: rgba(76, 141, 255, 0.1); }
+    .tag-python { color: var(--gold); border-color: rgba(245, 197, 66, 0.4); background: rgba(245, 197, 66, 0.08); }
+    .tag-java { color: #FFA769; border-color: rgba(255, 138, 61, 0.4); background: rgba(255, 138, 61, 0.08); }
+    .project-link { align-self: flex-start; margin-top: 1.5rem; font-weight: 600; color: var(--gold); border-bottom: 1px solid rgba(245, 197, 66, 0.4); padding-bottom: 2px; transition: border-color 0.2s; }
+    .project-link:hover { border-color: var(--gold); }
+
+    /* ---------- 11. Video ---------- */
+    .video-stage {
+      position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+      border-radius: 28px; background: var(--deep); border: 1px solid var(--stroke);
+      box-shadow: 0 50px 140px -50px rgba(76, 141, 255, 0.5);
+    }
+    .video-stage video { width: 100%; height: 100%; object-fit: cover; }
+    .play-overlay {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      background: linear-gradient(to top, rgba(7, 11, 31, 0.7), rgba(7, 11, 31, 0.15));
+      transition: opacity 0.5s;
+    }
+    .video-stage.playing .play-overlay { opacity: 0; pointer-events: none; }
+    .play-circle {
+      position: relative; width: clamp(76px, 10vw, 120px); aspect-ratio: 1; border-radius: 50%;
+      display: grid; place-items: center; background: var(--gold); color: var(--gold-ink);
+      transition: transform 0.4s var(--ease);
+    }
+    .play-circle::before { content: ""; position: absolute; inset: -14px; border-radius: 50%; border: 1.5px solid rgba(245, 197, 66, 0.6); animation: pulse 2.2s ease-out infinite; }
+    @keyframes pulse { from { transform: scale(0.85); opacity: 1; } to { transform: scale(1.4); opacity: 0; } }
+    .play-overlay:hover .play-circle { transform: scale(1.08); }
+    .play-circle svg { width: 34%; height: 34%; margin-left: 7%; fill: currentColor; }
+    .video-note {
+      position: absolute; left: 50%; bottom: 1.25rem; transform: translateX(-50%);
+      width: max-content; max-width: calc(100% - 2rem); text-align: center;
+      padding: 0.6rem 1.1rem; border-radius: 999px; font-size: 0.92rem;
+      background: rgba(7, 11, 31, 0.88); border: 1px solid var(--stroke);
+    }
+
+    /* ---------- 12. Zaman çizelgesi (Journey) ----------
+       Ortada bir çizgi var; kaydırdıkça altınla doluyor ve
+       çizgi bir adıma ulaşınca o adımın noktası yanıyor. */
+    .timeline { position: relative; max-width: 1100px; margin-inline: auto; }
+    .tl-line { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; transform: translateX(-50%); background: var(--stroke); border-radius: 2px; }
+    .tl-progress {
+      position: absolute; top: 0; left: 0; width: 100%; height: 0; border-radius: 2px;
+      background: linear-gradient(var(--blue), var(--gold));
+      box-shadow: 0 0 18px rgba(245, 197, 66, 0.55);
+    }
+    .tl-item { position: relative; display: grid; grid-template-columns: 1fr 76px 1fr; align-items: start; }
+    .tl-item + .tl-item { margin-top: clamp(1.75rem, 4vw, 2.75rem); }
+
+    /* Ortadaki yuvarlak ikon */
+    .tl-dot {
+      position: relative; z-index: 1; grid-column: 2; grid-row: 1; justify-self: center;
+      width: 46px; height: 46px; margin-top: 1.35rem; border-radius: 50%;
+      display: grid; place-items: center;
+      background: var(--night); border: 1.5px solid var(--stroke-strong); color: var(--muted);
+      transition: background-color 0.5s, border-color 0.5s, color 0.5s, box-shadow 0.5s, transform 0.5s var(--ease);
+    }
+    .tl-dot svg { width: 20px; height: 20px; }
+    .tl-item.reached .tl-dot {
+      background: var(--gold); border-color: var(--gold); color: var(--gold-ink); transform: scale(1.06);
+      box-shadow: 0 0 0 6px rgba(245, 197, 66, 0.12), 0 0 26px rgba(245, 197, 66, 0.5);
+    }
+    /* "Şimdi" adımında noktanın etrafında nabız gibi atan halka */
+    .tl-item.now.reached .tl-dot::after {
+      content: ""; position: absolute; inset: -8px; border-radius: 50%;
+      border: 1.5px solid rgba(245, 197, 66, 0.7); animation: pulse 2.2s ease-out infinite;
+    }
+
+    /* Kart: tek sıradakiler solda, çift sıradakiler sağda */
+    .tl-card {
+      grid-row: 1; position: relative;
+      padding: 1.5rem 1.6rem; border-radius: 22px;
+      background: var(--panel); border: 1px solid var(--stroke);
+      transition: border-color 0.5s, background-color 0.5s;
+    }
+    .tl-item:nth-of-type(odd) .tl-card { grid-column: 1; }
+    .tl-item:nth-of-type(even) .tl-card { grid-column: 3; }
+    .tl-item.reached .tl-card { border-color: rgba(245, 197, 66, 0.28); background: rgba(255, 255, 255, 0.055); }
+
+    /* Kartın karşısındaki büyük yıl yazısı */
+    .tl-year {
+      grid-row: 1; margin-top: 0.75rem;
+      font-family: var(--font-display); font-weight: 800; line-height: 1;
+      font-size: clamp(2.6rem, 5.5vw, 4.75rem); letter-spacing: -0.045em;
+      color: transparent; -webkit-text-stroke: 1px rgba(238, 241, 250, 0.22);
+      transition: color 0.6s, -webkit-text-stroke-color 0.6s;
+    }
+    .tl-item:nth-of-type(odd) .tl-year { grid-column: 3; }
+    .tl-item:nth-of-type(even) .tl-year { grid-column: 1; text-align: right; }
+    .tl-item.reached .tl-year { color: rgba(238, 241, 250, 0.1); -webkit-text-stroke-color: rgba(245, 197, 66, 0.55); }
+
+    .tl-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem 0.75rem; margin-bottom: 0.8rem; }
+    .tl-type { font-size: 0.78rem; font-weight: 600; padding: 0.2rem 0.7rem; border-radius: 999px; border: 1px solid; }
+    .tl-type.work { color: #FFA769; border-color: rgba(255, 138, 61, 0.4); background: rgba(255, 138, 61, 0.08); }
+    .tl-type.study { color: #8DB6FF; border-color: rgba(76, 141, 255, 0.4); background: rgba(76, 141, 255, 0.1); }
+    .tl-type.project { color: var(--gold); border-color: rgba(245, 197, 66, 0.4); background: rgba(245, 197, 66, 0.08); }
+    .tl-date { font-family: var(--font-mono); font-size: 0.82rem; color: var(--muted); }
+    .tl-card h3 { font-size: clamp(1.35rem, 2.2vw, 1.75rem); line-height: 1.15; margin-bottom: 0.3rem; }
+    .tl-org { font-weight: 500; color: #C9D3EE; }
+    .tl-desc { color: var(--muted); margin-top: 0.6rem; }
+    .tl-link { display: inline-block; margin-top: 0.9rem; font-weight: 600; color: var(--gold); border-bottom: 1px solid rgba(245, 197, 66, 0.4); padding-bottom: 1px; transition: border-color 0.2s; }
+    .tl-link:hover { border-color: var(--gold); }
+
+    /* Geniş ekranda kartlar kendi tarafından kayarak gelsin */
+    @media (min-width: 761px) {
+      .js .tl-item:nth-of-type(odd) .tl-card[data-reveal] { transform: translateX(-48px); }
+      .js .tl-item:nth-of-type(even) .tl-card[data-reveal] { transform: translateX(48px); }
+      .js .tl-item .tl-card[data-reveal].visible { transform: none; }
+    }
+
+    /* ---------- 13. İletişim ---------- */
+    .contact { text-align: center; overflow: hidden; isolation: isolate; }
+    .contact::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(55% 65% at 50% 100%, rgba(245, 197, 66, 0.17), transparent 70%); }
+    .contact-title { font-size: clamp(3rem, 9vw, 7.5rem); line-height: 0.92; letter-spacing: -0.045em; max-width: 12ch; margin-inline: auto; }
+    .contact-text { color: var(--muted); font-size: 1.15rem; max-width: 44ch; margin: 1.5rem auto 2.5rem; }
+    .contact-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.9rem; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; z-index: 260;
+      padding: 0.8rem 1.3rem; border-radius: 999px;
+      background: var(--gold); color: var(--gold-ink); font-weight: 600;
+      transform: translate(-50%, calc(100% + 60px)); visibility: hidden;
+      transition: transform 0.5s var(--ease), visibility 0s linear 0.5s;
+    }
+    .toast.show { transform: translate(-50%, 0); visibility: visible; transition: transform 0.5s var(--ease), visibility 0s; }
+
+    /* Bir resim yüklenemezse kırık resim ikonu yerine boş panel görünsün */
+    img.broken { visibility: hidden; }
+
+    footer { border-top: 1px solid var(--stroke); padding-block: 2rem; }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.95rem; }
+    .to-top { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text); }
+    .to-top:hover { color: var(--gold); }
+
+    /* ---------- 14. Kaydırınca beliren öğeler ---------- */
+    .js [data-reveal] {
+      opacity: 0; transform: translateY(48px); filter: blur(8px);
+      transition: opacity 1.1s var(--ease), transform 1.1s var(--ease), filter 1.1s var(--ease);
+      transition-delay: var(--d, 0s);
+    }
+    .js [data-reveal].visible { opacity: 1; transform: none; filter: none; }
+
+    /* ---------- 15. Tablet ve telefon ---------- */
+    @media (max-width: 1000px) {
+      .facts { grid-template-columns: 1fr; }
+      .fact { display: flex; align-items: center; gap: 1rem; }
+      .fact-icon { margin-bottom: 0; flex: none; }
+    }
+    @media (max-width: 760px) {
+      :root { --nav-h: 64px; }
+      .container { width: min(1240px, 100% - 32px); }
+      .nav-links { display: none; }
+      .menu-btn { display: block; }
+      #globe { top: calc(var(--nav-h) + 0.5rem); right: 50%; width: min(94vw, 430px); transform: translateX(50%); }
+      .hero-bottom { flex-direction: column; align-items: flex-start; }
+      .about-grid { grid-template-columns: 1fr; }
+      .badge { left: -0.5rem; bottom: -1.75rem; }
+      .project-grid { grid-template-columns: 1fr; }
+      .featured .project-inner { grid-template-columns: 1fr; }
+      .featured .project-media { min-height: 0; aspect-ratio: 16 / 10; }
+      /* Telefonda zaman çizelgesi: çizgi solda, kartlar sağda */
+      .tl-line { left: 22px; transform: none; }
+      .tl-item { grid-template-columns: 46px 1fr; column-gap: 0.9rem; }
+      .tl-dot { grid-column: 1; margin-top: 1.2rem; }
+      .tl-item:nth-of-type(n) .tl-card { grid-column: 2; }
+      .tl-year { display: none; }
+      .tl-card { padding: 1.25rem 1.3rem; }
+      .video-stage { border-radius: 20px; }
+      .terminal { font-size: 0.66rem; }
+    }
+
+    /* ---------- 16. Hareket istemeyenler için animasyonları kapat ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0s !important; }
+      html { scroll-behavior: auto; }
+      .js [data-reveal] { opacity: 1; transform: none; filter: none; }
+    }
+  </style>
+</head>
+<body class="loading">
+
+  <!-- ===================== AÇILIŞ EKRANI ===================== -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader-row">
+      <div class="preloader-name">Gorkem</div>
+      <div class="preloader-count"><span id="count">0</span></div>
+    </div>
+    <div class="preloader-bar"><span id="preloader-bar"></span></div>
+  </div>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- ===================== ÜST MENÜ ===================== -->
+  <nav class="nav" id="nav" aria-label="Main">
+    <div class="container nav-inner">
+      <a href="#top" class="logo">Gorkem<span class="logo-dot"></span></a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#journey">Journey</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#video">Video</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="menu-btn" id="menu-btn" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" inert>
+    <ul>
+      <li><a href="#about" style="--i:0">About</a></li>
+      <li><a href="#journey" style="--i:1">Journey</a></li>
+      <li><a href="#projects" style="--i:2">Projects</a></li>
+      <li><a href="#video" style="--i:3">Video</a></li>
+      <li><a href="#contact" style="--i:4">Contact</a></li>
+    </ul>
+  </div>
+
+  <main>
+    <!-- ===================== GİRİŞ (HERO) ===================== -->
+    <header class="hero" id="top">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <canvas id="globe" aria-hidden="true"></canvas>
+
+      <div class="container">
+        <p class="status hero-fade" style="--d:0.1s"><span class="status-dot"></span>Currently learning web development</p>
+        <h1 class="name" id="name">Gorkem</h1>
+        <div class="hero-bottom">
+          <p class="hero-text hero-fade" style="--d:0.6s">
+            IT student at UTS College.<br>
+            I build things with <span class="rotator" id="rotator">Java</span>
+          </p>
+          <div class="hero-actions hero-fade" style="--d:0.75s">
+            <a class="btn btn-gold magnetic" href="#projects">See my work</a>
+            <a class="btn btn-ghost magnetic" href="#contact">Get in touch</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== KAYAN ŞERİTLER ===================== -->
+    <div class="band" aria-hidden="true">
+      <div class="marquee marquee-gold">
+        <div class="marquee-track">
+          <span class="word">Java</span><span class="star">✦</span>
+          <span class="word outline">Python</span><span class="star">✦</span>
+          <span class="word">HTML</span><span class="star">✦</span>
+          <span class="word outline">CSS</span><span class="star">✦</span>
+          <span class="word">JavaScript</span><span class="star">✦</span>
+          <span class="word outline">Problem solving</span><span class="star">✦</span>
+        </div>
+      </div>
+      <div class="marquee marquee-blue">
+        <div class="marquee-track">
+          <span class="word outline">Learning</span><span class="star">✦</span>
+          <span class="word">Building</span><span class="star">✦</span>
+          <span class="word outline">Debugging</span><span class="star">✦</span>
+          <span class="word">Designing</span><span class="star">✦</span>
+          <span class="word outline">Growing</span><span class="star">✦</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== HAKKIMDA ===================== -->
+    <section class="section" id="about">
+      <div class="container about-grid">
+        <div class="portrait-wrap" data-reveal>
+          <div class="portrait-frame">
+            <!-- Kendi fotoğrafını "profile.jpg" adıyla bu dosyanın yanına koy, src'yi "profile.jpg" yap -->
+            <img id="portrait" src="https://picsum.photos/seed/gorkem-portrait/700/880" alt="Portrait of Gorkem">
+          </div>
+          <div class="badge" aria-hidden="true">
+            <svg class="badge-ring" viewBox="0 0 200 200">
+              <defs><path id="badge-circle" d="M100,100 m-74,0 a74,74 0 1,1 148,0 a74,74 0 1,1 -148,0"/></defs>
+              <text><textPath href="#badge-circle" textLength="462" lengthAdjust="spacing">IT STUDENT ✦ JAVA ✦ PYTHON ✦ WEB DESIGN ✦ </textPath></text>
+            </svg>
+            <span class="badge-core">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6"/><path d="M16 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <h2 class="sr-only">About me</h2>
+          <!-- Bu cümle kaydırdıkça kelime kelime aydınlanıyor -->
+          <p class="statement" id="statement">I'm an IT student at UTS College who loves turning ideas into working code. I write Java and Python, and now I'm learning to build for the web, starting with this site.</p>
+          <ul class="facts" data-reveal>
+            <li class="fact">
+              <span class="fact-icon blue"><svg class="icon" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v5"/></svg></span>
+              <div><span class="fact-label">Studying</span><span class="fact-value">Diploma of IT, UTS College</span></div>
+            </li>
+            <li class="fact">
+              <span class="fact-icon gold"><svg class="icon" viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6"/><path d="M16 6l6 6-6 6"/><path d="M14 4l-4 16"/></svg></span>
+              <div><span class="fact-label">Writes</span><span class="fact-value">Java and Python</span></div>
+            </li>
+            <li class="fact">
+              <span class="fact-icon orange"><svg class="icon" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></svg></span>
+              <div><span class="fact-label">Learning</span><span class="fact-value">HTML, CSS and JavaScript</span></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== YOLCULUK (ZAMAN ÇİZELGESİ) =====================
+         Yeni bir adım eklemek için bir <article class="tl-item"> bloğunu kopyala.
+         Sağ/sol yerleşimi otomatik: tek sıradakiler solda, çift sıradakiler sağda. -->
+    <section class="section" id="journey">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-reveal>Journey</h2>
+          <p data-reveal style="--d:0.1s">From a high school app idea and a chemistry lab to studying IT in Sydney.</p>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <div class="tl-line" aria-hidden="true"><div class="tl-progress" id="tl-progress"></div></div>
+
+          <!-- 1) Lise: İhtiyacım Var uygulaması -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type project">Project</span><span class="tl-date">High school, 9th grade</span></div>
+              <h3>İhtiyacım Var</h3>
+              <p class="tl-org">Team project (the name means "I need it")</p>
+              <p class="tl-desc">With classmates, I helped design an app for sharing things: people post items they no longer need, and anyone who needs them can take them. We ran the idea as an Instagram page.</p>
+              <a class="tl-link" href="https://www.instagram.com/ihtiyacimvarapp/" target="_blank" rel="noopener">See it on Instagram</a>
+            </div>
+            <div class="tl-year" aria-hidden="true">School</div>
+          </article>
+
+          <!-- 2) Laboratuvar teknisyeni -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M9 3h6"/><path d="M10 3v6l-5.5 9.5A1.6 1.6 0 0 0 6 21h12a1.6 1.6 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type work">Work</span><span class="tl-date">Jun 2021 – Aug 2023 (2 yrs 3 mos)</span></div>
+              <h3>Laboratory Technician</h3>
+              <p class="tl-org">Netaş Madencilik</p>
+              <p class="tl-desc">Worked in the laboratory of a mining company, using laboratory equipment.</p>
+            </div>
+            <div class="tl-year" aria-hidden="true">2021</div>
+          </article>
+
+          <!-- 3) Kimya lisans -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v5"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type study">Study</span><span class="tl-date">From Oct 2022</span></div>
+              <h3>Chemistry</h3>
+              <p class="tl-org">Ondokuz Mayıs University</p>
+              <p class="tl-desc">Studied chemistry while working in the lab, and left the program in my second year.</p>
+            </div>
+            <div class="tl-year" aria-hidden="true">2022</div>
+          </article>
+
+          <!-- 4) Satış ve pazarlama -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type work">Work</span><span class="tl-date">Jan 2024 – Oct 2024 (10 mos)</span></div>
+              <h3>Sales &amp; Marketing Specialist</h3>
+              <p class="tl-org">Netaş Madencilik, part-time</p>
+              <p class="tl-desc">Moved from the lab to the business side of the same company.</p>
+            </div>
+            <div class="tl-year" aria-hidden="true">2024</div>
+          </article>
+
+          <!-- 5) English Language Company -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type study">Study</span><span class="tl-date">Nov 2024 – Jun 2025</span></div>
+              <h3>English language studies</h3>
+              <p class="tl-org">English Language Company</p>
+            </div>
+            <div class="tl-year" aria-hidden="true">2024</div>
+          </article>
+
+          <!-- 6) Academic English -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type study">Study</span><span class="tl-date">Jul 2025 – Feb 2026</span></div>
+              <h3>Academic English</h3>
+              <p class="tl-org">UTS College</p>
+            </div>
+            <div class="tl-year" aria-hidden="true">2025</div>
+          </article>
+
+          <!-- 7) Bilgi teknolojileri -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8"/><path d="M12 16v4"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type study">Study</span><span class="tl-date">Mar 2026 – May 2029 (expected)</span></div>
+              <h3>Information Technology</h3>
+              <p class="tl-org">UTS College and University of Technology Sydney</p>
+              <p class="tl-desc">Studying IT in Sydney, starting with the Diploma of Information Technology at UTS College. Writing Java and Python.</p>
+            </div>
+            <div class="tl-year" aria-hidden="true">2026</div>
+          </article>
+
+          <!-- 8) İlk Java projeleri -->
+          <article class="tl-item">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M8 6l-6 6 6 6"/><path d="M16 6l6 6-6 6"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type project">Project</span><span class="tl-date">2026</span></div>
+              <h3>First Java projects</h3>
+              <p class="tl-org">The Garden Table and Hospital Imaging System</p>
+              <p class="tl-desc">Two object-oriented programs built with inheritance and method overriding.</p>
+              <a class="tl-link" href="#projects">See the projects</a>
+            </div>
+            <div class="tl-year" aria-hidden="true">2026</div>
+          </article>
+
+          <!-- 9) Bu site (şimdi) -->
+          <article class="tl-item now">
+            <div class="tl-dot" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></svg></div>
+            <div class="tl-card" data-reveal>
+              <div class="tl-meta"><span class="tl-type project">Milestone</span><span class="tl-date">Oct 2026</span></div>
+              <h3>Launched this website</h3>
+              <p class="tl-org">gorkemberke.github.io</p>
+              <p class="tl-desc">Built from a single HTML file and published on GitHub Pages.</p>
+              <a class="tl-link" href="https://github.com/gorkemberke/gorkemberke.github.io" target="_blank" rel="noopener">View the code</a>
+            </div>
+            <div class="tl-year" aria-hidden="true">Now</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PROJELER ===================== -->
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-reveal>Projects</h2>
+          <p data-reveal style="--d:0.1s">Things I've built while learning, from first programs to this website.</p>
+        </div>
+
+        <div class="project-grid">
+          <!-- Öne çıkan proje (geniş kart) -->
+          <article class="project featured" data-reveal>
+            <div class="project-inner tilt">
+              <div class="project-media"><img src="https://picsum.photos/seed/gorkem-web/1100/800" alt="Screenshot of this website"></div>
+              <div class="project-body">
+                <ul class="tags"><li class="tag tag-web">HTML</li><li class="tag tag-web">CSS</li><li class="tag tag-web">JavaScript</li></ul>
+                <h3>This website</h3>
+                <p>My personal site, built from scratch. It started as a plain HTML page and grew into this: a 3D skills globe, animated type and a timeline that fills in as you scroll, all in plain JavaScript.</p>
+                <!-- Bu sitenin kodunun durduğu GitHub klasörü -->
+                <a class="project-link" href="https://github.com/gorkemberke/gorkemberke.github.io" target="_blank" rel="noopener">View the code</a>
+              </div>
+            </div>
+          </article>
+
+          <!-- Okulda yaptığım Java projesi: Hospital Imaging System.
+               Terminaldeki satırlar programın gerçek çıktısından alındı. -->
+          <article class="project" data-reveal>
+            <div class="project-inner tilt">
+              <div class="project-media">
+                <div class="terminal" role="img" aria-label="Terminal output of the Hospital Imaging System program">
+                  <div class="terminal-bar">Project.java</div>
+                  <div class="terminal-body">
+                    <span class="ln cmd" style="--n:0">$ java Project</span>
+                    <span class="ln" style="--n:1">Radiologist - Name: Dr Gorkem, Experience: 8 years, Scan type: MRI, Payment: $1200.0</span>
+                    <span class="ln" style="--n:2">Nurse - Name: Nurse Ayse, Experience: 4 years, Department: Emergency, Payment: $480.0</span>
+                    <span class="ln" style="--n:3">Database name: Hospital Scan Database, Number of scans: <span class="num">120</span></span>
+                    <span class="ln" style="--n:4">Do you want to add a new scan? (yes/no)</span>
+                    <span class="ln input" style="--n:5">yes</span>
+                    <span class="ln hl" style="--n:6">A new scan was added to the database.</span>
+                    <span class="ln hl" style="--n:7">Dr Gorkem is checking MRI images.</span>
+                    <span class="ln hl" style="--n:8">Nurse Ayse is helping patients in the Emergency department.</span>
+                    <span class="ln" style="--n:9">Database name: Hospital Scan Database, Number of scans: <span class="num">121</span></span>
+                  </div>
+                </div>
+              </div>
+              <div class="project-body">
+                <ul class="tags"><li class="tag tag-java">Java</li><li class="tag tag-java">OOP</li></ul>
+                <h3>Hospital Imaging System</h3>
+                <p>A program for a hospital's imaging team. Radiologist and Nurse extend a MedicalProfessional class and override how they work and how their pay is calculated, while a database keeps count of the scans.</p>
+                <!-- Kodu GitHub'a koyunca bu linki ekle:
+                <a class="project-link" href="#">View the code</a> -->
+              </div>
+            </div>
+          </article>
+
+          <!-- Okulda yaptığım Java projesi: The Garden Table.
+               Terminaldeki satırlar programın gerçek çıktısından alındı. -->
+          <article class="project" data-reveal style="--d:0.12s">
+            <div class="project-inner tilt">
+              <div class="project-media">
+                <div class="terminal" id="java-terminal" role="img" aria-label="Terminal output of The Garden Table program">
+                  <div class="terminal-bar">Project.java</div>
+                  <div class="terminal-body">
+                    <span class="ln cmd" style="--n:0">$ java Project</span>
+                    <span class="ln title" style="--n:1">=== The Garden Table===</span>
+                    <span class="ln" style="--n:2">Baker -&gt; James, 5 years experience, 0 item(s) baked.</span>
+                    <span class="ln" style="--n:3">Today's menu</span>
+                    <span class="ln" style="--n:4">Dessert -&gt; Tiramisu ($8.5), Sweetness Level: 0</span>
+                    <span class="ln" style="--n:5">Drink -&gt; Sparkling Water ($3.0), Carbonated: true</span>
+                    <span class="ln" style="--n:6">Should the baker prepare the dessert today ? (yes/no)</span>
+                    <span class="ln input" style="--n:7">yes</span>
+                    <span class="ln hl" style="--n:8">Preparing dessert: Tiramisu (sweetness level: 0), served 1 time(s) today.</span>
+                    <span class="ln hl" style="--n:9">Preparing drink: Sparkling Water (carbonated), served 1 time(s) today.</span>
+                    <span class="ln" style="--n:10">Baker -&gt; James, 5 years experience, 2 item(s) baked.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="project-body">
+                <ul class="tags"><li class="tag tag-java">Java</li><li class="tag tag-java">OOP</li></ul>
+                <h3>The Garden Table</h3>
+                <p>A restaurant menu program from my Java class. A baker prepares items from the menu, and Dessert and Drink both extend a shared Dish class, each with its own way of being prepared.</p>
+                <!-- Kodu GitHub'a koyunca bu linki ekle:
+                <a class="project-link" href="#">View the code</a> -->
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VİDEO ===================== -->
+    <section class="section" id="video">
+      <div class="container">
+        <div class="section-head">
+          <h2 data-reveal>In action</h2>
+          <p data-reveal style="--d:0.1s">A short video of my projects running. Press play to watch.</p>
+        </div>
+        <div class="video-stage" id="video-stage" data-reveal>
+          <!-- Kendi videonu "video.mp4" adıyla bu dosyanın yanına koy.
+               Video yoksa kapak resmi (poster) ve bir uyarı görünür. -->
+          <video id="video-player" preload="metadata" playsinline poster="https://picsum.photos/seed/gorkem-video/1280/720">
+            <source src="video.mp4" type="video/mp4">
+          </video>
+          <button class="play-overlay" id="play-btn" aria-label="Play video">
+            <span class="play-circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span>
+          </button>
+          <p class="video-note" id="video-note" hidden>No video yet. Put a file named video.mp4 next to index.html.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== İLETİŞİM ===================== -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <h2 class="contact-title" data-reveal>Let's build something together.</h2>
+        <p class="contact-text" data-reveal style="--d:0.1s">Have a question, an idea or an opportunity? My inbox is open.</p>
+        <!-- Kendi e-posta adresini ve linklerini yaz (iki yerde: href ve data-email) -->
+        <div class="contact-actions" data-reveal style="--d:0.2s">
+          <a class="btn btn-gold magnetic" href="mailto:gorkemberke2004@gmail.com">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+            Email me
+          </a>
+          <button class="btn btn-ghost magnetic" id="copy-email" data-email="gorkemberke2004@gmail.com">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            Copy email
+          </button>
+          <a class="btn btn-ghost magnetic" href="https://github.com/gorkemberke" target="_blank" rel="noopener">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10"/><path d="M18 9c0 5-6 4-11.5 8.5"/></svg>
+            GitHub
+          </a>
+          <a class="btn btn-ghost magnetic" href="https://au.linkedin.com/in/gorkem-berke-pirpitoglu-52434a295" target="_blank" rel="noopener">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>Built by Gorkem with HTML, CSS and JavaScript. &copy; <span id="year">2026</span></span>
+      <a class="to-top" href="#top">
+        Back to top
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+      </a>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ============================================================
+       JAVASCRIPT: HAREKET VE ETKİLEŞİM
+       ============================================================ -->
+  <script>
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Yüklenemeyen resimleri gizle (internet yoksa veya dosya adı yanlışsa)
+    document.querySelectorAll("img").forEach(img => {
+      if (img.complete && img.getAttribute("src") && img.naturalWidth === 0) img.classList.add("broken");
+      img.addEventListener("error", () => img.classList.add("broken"));
+      img.addEventListener("load", () => img.classList.remove("broken"));
+    });
+
+    /* ---------- 1) İsmi harflere böl ---------- */
+    const nameEl = document.getElementById("name");
+    const nameText = nameEl.textContent.trim();
+    nameEl.setAttribute("aria-label", nameText);
+    nameEl.textContent = "";
+    const chars = [...nameText].map((letter, i) => {
+      const wrap = document.createElement("span");
+      wrap.className = "char-wrap";
+      wrap.setAttribute("aria-hidden", "true");
+      const ch = document.createElement("span");
+      ch.className = "char";
+      ch.textContent = letter;
+      ch.style.setProperty("--i", i);
+      wrap.appendChild(ch);
+      nameEl.appendChild(wrap);
+      return ch;
+    });
+
+    /* ---------- 2) Açılış ekranı: 0'dan 100'e say, sonra yukarı kay ---------- */
+    const preloader = document.getElementById("preloader");
+
+    function startSite() {
+      preloader.classList.add("done");
+      document.body.classList.remove("loading");
+      document.body.classList.add("loaded");
+      setTimeout(() => nameEl.classList.add("in"), reduceMotion ? 0 : 300);
+      setTimeout(() => preloader.remove(), 1300);
+    }
+
+    if (reduceMotion) {
+      startSite();
+    } else {
+      const countEl = document.getElementById("count");
+      const barEl = document.getElementById("preloader-bar");
+      const duration = 1500;
+      const startTime = performance.now();
+      function countUp(now) {
+        const t = Math.min((now - startTime) / duration, 1);
+        const value = Math.round((1 - Math.pow(1 - t, 3)) * 100);
+        countEl.textContent = value;
+        barEl.style.width = value + "%";
+        if (t < 1) requestAnimationFrame(countUp);
+        else setTimeout(startSite, 250);
+      }
+      requestAnimationFrame(countUp);
+    }
+
+    /* ---------- 3) İsim fareye tepki versin: yakın harfler kalınlaşıp altın olur ---------- */
+    const hero = document.querySelector(".hero");
+    if (finePointer && !reduceMotion) {
+      let nameFrame = null;
+      hero.addEventListener("mousemove", event => {
+        if (nameFrame) return;
+        nameFrame = requestAnimationFrame(() => {
+          nameFrame = null;
+          chars.forEach(ch => {
+            const r = ch.getBoundingClientRect();
+            const distance = Math.hypot(event.clientX - (r.left + r.width / 2), event.clientY - (r.top + r.height / 2));
+            const t = clamp(1 - distance / 420, 0, 1);      // 0 = uzak, 1 = çok yakın
+            const weight = Math.round(450 + t * 350);         // 450 ile 800 arası kalınlık
+            const width = Math.round(100 - t * 15);           // kalınlaşınca biraz daralsın
+            ch.style.fontVariationSettings = `"wght" ${weight}, "wdth" ${width}`;
+            ch.style.color = `color-mix(in oklab, var(--gold) ${Math.round(t * 100)}%, var(--text))`;
+          });
+        });
+      });
+      hero.addEventListener("mouseleave", () => {
+        chars.forEach(ch => { ch.style.fontVariationSettings = ""; ch.style.color = ""; });
+      });
+    }
+
+    /* ---------- 4) Değişen kelime: "I build things with ..." ---------- */
+    const rotator = document.getElementById("rotator");
+    const rotatorWords = ["Java", "Python", "HTML & CSS", "JavaScript"];
+    let wordIndex = 0;
+    if (!reduceMotion) {
+      setInterval(() => {
+        rotator.classList.add("swap");
+        setTimeout(() => {
+          wordIndex = (wordIndex + 1) % rotatorWords.length;
+          rotator.textContent = rotatorWords[wordIndex];
+          rotator.classList.remove("swap");
+        }, 350);
+      }, 2400);
+    }
+
+    /* ---------- 5) 3B yetenek küresi ----------
+       Kendi yeteneklerine göre bu listeyi değiştirebilirsin. */
+    const skills = [
+      "Java", "Python", "HTML", "CSS", "JavaScript", "OOP", "Algorithms",
+      "Data structures", "Information systems", "Problem solving", "Debugging",
+      "Web design", "Classes", "Functions", "Loops", "Logic", "Variables", "UI"
+    ];
+    const canvas = document.getElementById("globe");
+    const ctx = canvas.getContext("2d");
+
+    // Noktaları kürenin yüzeyine eşit dağıt (Fibonacci küresi)
+    function spherePoints(count) {
+      return Array.from({ length: count }, (_, i) => {
+        const y = 1 - (i / (count - 1)) * 2;
+        const radius = Math.sqrt(1 - y * y);
+        const theta = i * Math.PI * (3 - Math.sqrt(5));
+        return { x: Math.cos(theta) * radius, y, z: Math.sin(theta) * radius };
+      });
+    }
+    const wordPoints = spherePoints(skills.length).map((p, i) => ({ ...p, text: skills[i] }));
+    const dotPoints = spherePoints(220);
+
+    let globeSize = 0;
+    function resizeGlobe() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      globeSize = rect.width;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    let spinY = 0, spinSpeed = 0.0035, targetSpeed = 0.0035;
+    let tiltX = 0.35, targetTilt = 0.35;
+
+    function rotatePoint(p) {
+      // Önce Y ekseni etrafında dön, sonra X ekseninde eğ
+      const x = p.x * Math.cos(spinY) - p.z * Math.sin(spinY);
+      const z1 = p.x * Math.sin(spinY) + p.z * Math.cos(spinY);
+      const y = p.y * Math.cos(tiltX) - z1 * Math.sin(tiltX);
+      const z = p.y * Math.sin(tiltX) + z1 * Math.cos(tiltX);
+      return { x, y, z };
+    }
+
+    function drawGlobe() {
+      const s = globeSize, c = s / 2, R = s * 0.36;
+      ctx.clearRect(0, 0, s, s);
+
+      // Arka parıltı
+      const glow = ctx.createRadialGradient(c, c, 0, c, c, R * 1.2);
+      glow.addColorStop(0, "rgba(76, 141, 255, 0.22)");
+      glow.addColorStop(1, "rgba(76, 141, 255, 0)");
+      ctx.fillStyle = glow;
+      ctx.beginPath(); ctx.arc(c, c, R * 1.2, 0, Math.PI * 2); ctx.fill();
+
+      // Yörünge halkaları
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+      ctx.beginPath(); ctx.arc(c, c, R * 1.02, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(245, 197, 66, 0.22)";
+      ctx.beginPath(); ctx.ellipse(c, c, R * 1.32, R * 0.36, -0.42, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = "rgba(76, 141, 255, 0.18)";
+      ctx.beginPath(); ctx.ellipse(c, c, R * 1.18, R * 0.5, 0.55, 0, Math.PI * 2); ctx.stroke();
+
+      // Yörüngede dönen küçük altın nokta
+      const orbit = spinY * 1.6;
+      const ox = Math.cos(orbit) * R * 1.32, oy = Math.sin(orbit) * R * 0.36;
+      const rot = -0.42;
+      ctx.fillStyle = "#F5C542";
+      ctx.shadowColor = "rgba(245, 197, 66, 0.9)"; ctx.shadowBlur = 14;
+      ctx.beginPath(); ctx.arc(c + ox * Math.cos(rot) - oy * Math.sin(rot), c + ox * Math.sin(rot) + oy * Math.cos(rot), 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Küre yüzeyindeki noktalar
+      dotPoints.forEach(p => {
+        const r = rotatePoint(p);
+        const depth = (r.z + 1) / 2;   // 0 = arkada, 1 = önde
+        const scale = 1.6 / (2.2 - r.z);
+        ctx.fillStyle = `rgba(160, 185, 255, ${0.05 + depth * 0.35})`;
+        ctx.beginPath(); ctx.arc(c + r.x * R * scale, c + r.y * R * scale, 0.6 + depth * 1.2, 0, Math.PI * 2); ctx.fill();
+      });
+
+      // Kelimeler: arkadakiler önce çizilir, öndekiler üstte kalır
+      wordPoints
+        .map(p => { const r = rotatePoint(p); return { text: p.text, ...r, scale: 1.6 / (2.2 - r.z) }; })
+        .sort((a, b) => a.z - b.z)
+        .forEach(p => {
+          const depth = (p.z + 1) / 2;
+          const fontSize = Math.max(9, (s / 30) * p.scale);
+          ctx.font = `${depth > 0.6 ? 700 : 500} ${fontSize}px "Bricolage Grotesque", system-ui, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          if (depth > 0.6) {
+            ctx.fillStyle = `rgba(245, 197, 66, ${0.4 + depth * 0.6})`;
+            ctx.shadowColor = "rgba(245, 197, 66, 0.55)";
+            ctx.shadowBlur = 18 * depth;
+          } else {
+            ctx.fillStyle = `rgba(170, 190, 255, ${0.15 + depth * 0.6})`;
+            ctx.shadowBlur = 0;
+          }
+          ctx.fillText(p.text, c + p.x * R * p.scale, c + p.y * R * p.scale);
+        });
+      ctx.shadowBlur = 0;
+    }
+
+    // Fare küreyi döndürsün ve eğsin
+    if (finePointer) {
+      window.addEventListener("mousemove", event => {
+        const dx = (event.clientX / window.innerWidth) - 0.5;
+        const dy = (event.clientY / window.innerHeight) - 0.5;
+        targetSpeed = 0.0035 + dx * 0.02;
+        targetTilt = 0.35 + dy * 0.9;
+      });
+    }
+
+    // Küre sadece ekranda görünürken çizilsin (pil ve işlemci dostu)
+    let globeVisible = true, globeRunning = false;
+    function globeLoop() {
+      spinSpeed += (targetSpeed - spinSpeed) * 0.04;
+      tiltX += (targetTilt - tiltX) * 0.04;
+      spinY += spinSpeed;
+      drawGlobe();
+      if (globeVisible) requestAnimationFrame(globeLoop);
+      else globeRunning = false;
+    }
+    function startGlobe() {
+      if (reduceMotion) { drawGlobe(); return; }
+      if (!globeRunning) { globeRunning = true; requestAnimationFrame(globeLoop); }
+    }
+    new IntersectionObserver(entries => {
+      globeVisible = entries[0].isIntersecting;
+      if (globeVisible) startGlobe();
+    }).observe(canvas);
+
+    resizeGlobe();
+    startGlobe();
+    window.addEventListener("resize", () => { resizeGlobe(); if (reduceMotion) drawGlobe(); });
+    document.fonts && document.fonts.ready.then(() => { if (reduceMotion) drawGlobe(); });
+
+    /* ---------- 6) Kayan şeritler: içeriği iki kez yaz ki boşluksuz dönsün ---------- */
+    document.querySelectorAll(".marquee-track").forEach(track => {
+      track.innerHTML += track.innerHTML;
+    });
+
+    /* ---------- 7) "Hakkımda" cümlesini kelimelere böl ---------- */
+    const statement = document.getElementById("statement");
+    const statementWords = statement.textContent.trim().split(/\s+/);
+    statement.textContent = "";
+    const wordEls = statementWords.map(word => {
+      const span = document.createElement("span");
+      span.className = "w";
+      span.textContent = word;
+      statement.append(span, " ");
+      return span;
+    });
+
+    function updateStatement() {
+      if (reduceMotion) { wordEls.forEach(w => w.classList.add("lit")); return; }
+      const top = statement.getBoundingClientRect().top;
+      const progress = clamp((window.innerHeight * 0.9 - top) / (window.innerHeight * 0.55), 0, 1);
+      const litCount = Math.round(progress * wordEls.length);
+      wordEls.forEach((w, i) => w.classList.toggle("lit", i < litCount));
+    }
+
+    /* ---------- 8) Fotoğrafta hafif derinlik (parallax) ---------- */
+    const portrait = document.getElementById("portrait");
+    function updateParallax() {
+      if (reduceMotion) return;
+      const r = portrait.parentElement.getBoundingClientRect();
+      const offset = (r.top + r.height / 2) - window.innerHeight / 2;
+      portrait.style.transform = `translateY(${clamp(offset * -0.08, -40, 40)}px) scale(1.14)`;
+    }
+
+    /* ---------- 8b) Zaman çizelgesi: çizgi kaydırdıkça dolsun, ulaştığı adımlar yansın ---------- */
+    const timeline = document.getElementById("timeline");
+    const timelineProgress = document.getElementById("tl-progress");
+    const timelineItems = [...timeline.querySelectorAll(".tl-item")];
+
+    function updateTimeline() {
+      const trigger = window.innerHeight * 0.6;                // ekranın %60 yüksekliği
+      const r = timeline.getBoundingClientRect();
+      const progress = clamp((trigger - r.top) / r.height, 0, 1);
+      timelineProgress.style.height = `${progress * 100}%`;
+      timelineItems.forEach(item => {
+        const dot = item.querySelector(".tl-dot").getBoundingClientRect();
+        item.classList.toggle("reached", dot.top + dot.height / 2 < trigger);
+      });
+    }
+
+    /* ---------- 9) Kaydırma: üst çubuk, menünün gizlenmesi ---------- */
+    const nav = document.getElementById("nav");
+    const progressBar = document.getElementById("progress");
+    let lastScrollY = window.scrollY, scrollTicking = false, menuOpen = false;
+
+    function onScroll() {
+      const y = window.scrollY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      progressBar.style.transform = `scaleX(${max > 0 ? y / max : 0})`;
+      nav.classList.toggle("scrolled", y > 40);
+      if (!menuOpen) nav.classList.toggle("hidden", y > lastScrollY && y > 500);
+      lastScrollY = y;
+      updateStatement();
+      updateParallax();
+      updateTimeline();
+      scrollTicking = false;
+    }
+    window.addEventListener("scroll", () => {
+      if (!scrollTicking) { scrollTicking = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    onScroll();
+
+    /* ---------- 10) Kaydırınca beliren öğeler ---------- */
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    document.querySelectorAll("[data-reveal]").forEach(el => revealObserver.observe(el));
+
+    /* ---------- 11) Menüde bulunduğun bölümü işaretle ---------- */
+    const navLinks = document.querySelectorAll(".nav-links a");
+    const sectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          navLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
+        }
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    document.querySelectorAll("main section[id]").forEach(section => sectionObserver.observe(section));
+
+    /* ---------- 12) Telefon menüsü ---------- */
+    const menuBtn = document.getElementById("menu-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+    function setMenu(open) {
+      menuOpen = open;
+      mobileMenu.classList.toggle("open", open);
+      mobileMenu.inert = !open;
+      menuBtn.setAttribute("aria-expanded", String(open));
+      menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      document.body.classList.toggle("menu-open", open);
+      if (open) nav.classList.remove("hidden");
+    }
+    menuBtn.addEventListener("click", () => setMenu(!menuOpen));
+    mobileMenu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => setMenu(false)));
+    document.addEventListener("keydown", event => { if (event.key === "Escape" && menuOpen) setMenu(false); });
+
+    /* ---------- 13) İmleci takip eden altın halka ---------- */
+    if (finePointer && !reduceMotion) {
+      const ring = document.getElementById("cursor-ring");
+      let mouseX = -100, mouseY = -100, ringX = -100, ringY = -100, ringScale = 1, targetScale = 1;
+      window.addEventListener("mousemove", event => {
+        mouseX = event.clientX; mouseY = event.clientY;
+        ring.classList.add("on");
+      });
+      document.addEventListener("mouseover", event => {
+        const overClickable = Boolean(event.target.closest("a, button"));
+        targetScale = overClickable ? 1.9 : 1;
+        ring.classList.toggle("hover", overClickable);
+      });
+      document.documentElement.addEventListener("mouseleave", () => ring.classList.remove("on"));
+      (function followMouse() {
+        ringX += (mouseX - ringX) * 0.18;
+        ringY += (mouseY - ringY) * 0.18;
+        ringScale += (targetScale - ringScale) * 0.15;
+        ring.style.transform = `translate3d(${ringX - 18}px, ${ringY - 18}px, 0) scale(${ringScale})`;
+        requestAnimationFrame(followMouse);
+      })();
+    }
+
+    /* ---------- 14) Mıknatıs butonlar ve 3B eğilen kartlar ---------- */
+    if (finePointer && !reduceMotion) {
+      document.querySelectorAll(".magnetic").forEach(button => {
+        button.addEventListener("mousemove", event => {
+          const r = button.getBoundingClientRect();
+          const x = event.clientX - (r.left + r.width / 2);
+          const y = event.clientY - (r.top + r.height / 2);
+          button.style.transform = `translate(${x * 0.22}px, ${y * 0.35}px)`;
+        });
+        button.addEventListener("mouseleave", () => { button.style.transform = ""; });
+      });
+
+      document.querySelectorAll(".tilt").forEach(card => {
+        card.addEventListener("mousemove", event => {
+          const r = card.getBoundingClientRect();
+          const px = (event.clientX - r.left) / r.width;    // 0 = sol, 1 = sağ
+          const py = (event.clientY - r.top) / r.height;    // 0 = üst, 1 = alt
+          card.style.transform = `perspective(1100px) rotateX(${(0.5 - py) * 6}deg) rotateY(${(px - 0.5) * 8}deg)`;
+          card.style.setProperty("--gx", `${px * 100}%`);
+          card.style.setProperty("--gy", `${py * 100}%`);
+        });
+        card.addEventListener("mouseleave", () => { card.style.transform = ""; });
+      });
+    }
+
+    /* ---------- 15a) Proje terminalleri: ekrana gelince satır satır yazılsın ---------- */
+    const terminalObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("run");
+          terminalObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll(".terminal").forEach(terminal => terminalObserver.observe(terminal));
+
+    /* ---------- 15) Video oynatıcı ---------- */
+    const videoStage = document.getElementById("video-stage");
+    const video = document.getElementById("video-player");
+    const videoNote = document.getElementById("video-note");
+    document.getElementById("play-btn").addEventListener("click", () => {
+      // video.mp4 bulunamadıysa uyarıyı göster
+      if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) {
+        videoNote.hidden = false;
+        return;
+      }
+      video.play()
+        .then(() => {
+          videoStage.classList.add("playing");
+          video.controls = true;
+          videoNote.hidden = true;
+        })
+        .catch(() => { videoNote.hidden = false; });
+    });
+    video.addEventListener("ended", () => {
+      videoStage.classList.remove("playing");
+      video.controls = false;
+    });
+
+    /* ---------- 17) E-postayı kopyala ---------- */
+    const toast = document.getElementById("toast");
+    let toastTimer;
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+    document.getElementById("copy-email").addEventListener("click", event => {
+      const email = event.currentTarget.dataset.email;
+      if (!navigator.clipboard) { showToast(email); return; }
+      navigator.clipboard.writeText(email)
+        .then(() => showToast("Email copied"))
+        .catch(() => showToast(email));
+    });
+  </script>
+</body>
+</html>
