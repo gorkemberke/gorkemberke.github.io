@@ -326,8 +326,49 @@
     .featured h3 { font-size: clamp(2.2rem, 4vw, 3.3rem); }
     /* Java projesi için terminal görünümü */
     .terminal { position: relative; height: 100%; overflow: hidden; background: #0A0F24; font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.7; color: #C9D3EE; }
-    .terminal-bar { padding: 0.55rem 1.25rem; font-size: 0.72rem; color: var(--muted); background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid var(--stroke); }
-    .terminal-body { padding: 1rem 1.25rem; }
+    .terminal { display: flex; flex-direction: column; }
+    .terminal-bar {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0.45rem 0.6rem 0.45rem 1.25rem; font-size: 0.72rem; color: var(--muted);
+      background: rgba(255, 255, 255, 0.04); border-bottom: 1px solid var(--stroke);
+    }
+    .terminal-body { flex: 1; min-height: 0; overflow-y: auto; padding: 1rem 1.25rem; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+
+    /* "Try it" butonu: programı tarayıcıda çalıştırır */
+    .run-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.3rem 0.8rem; border-radius: 999px;
+      font-family: var(--font-body); font-size: 0.78rem; font-weight: 600;
+      background: var(--gold); color: var(--gold-ink);
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+    .run-btn:hover { background: var(--gold-soft); }
+    .run-btn:disabled { opacity: 0.45; cursor: default; }
+    .run-btn svg { width: 11px; height: 11px; fill: currentColor; }
+
+    /* Ziyaretçinin cevap yazdığı satır */
+    .terminal-input {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.55rem 0.75rem 0.55rem 1.25rem;
+      border-top: 1px solid var(--stroke); background: rgba(255, 255, 255, 0.03);
+    }
+    .terminal-input:focus-within { background: rgba(245, 197, 66, 0.07); }
+    .terminal-input .prompt { color: #4ADE80; }
+    .terminal-input input {
+      flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+      font: inherit; color: #4ADE80; caret-color: var(--gold);
+    }
+    .terminal-input input::placeholder { color: rgba(154, 164, 196, 0.6); }
+    .terminal-input button {
+      font-family: var(--font-mono); font-size: 0.72rem; padding: 0.25rem 0.65rem;
+      border-radius: 6px; border: 1px solid var(--stroke-strong);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .terminal-input button:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* Program çalışırken terminal büyüsün ve alttaki solma efekti kalksın */
+    .project-media:has(.terminal.running), .project-media:has(.terminal.done) { aspect-ratio: auto; height: 420px; }
+    .terminal.running::after, .terminal.done::after { display: none; }
     .terminal .ln { display: block; white-space: pre-wrap; overflow-wrap: anywhere; }
     .terminal .cmd { color: var(--muted); }
     .terminal .title { color: var(--gold); font-weight: 500; }
@@ -508,6 +549,7 @@
       .tl-card { padding: 1.25rem 1.3rem; }
       .video-stage { border-radius: 20px; }
       .terminal { font-size: 0.66rem; }
+      .project-media:has(.terminal.running), .project-media:has(.terminal.done) { height: 380px; }
     }
 
     /* ---------- 16. Hareket istemeyenler için animasyonları kapat ---------- */
@@ -749,7 +791,7 @@
               <div class="tl-meta"><span class="tl-type project">Project</span><span class="tl-date">2026</span></div>
               <h3>First Java projects</h3>
               <p class="tl-org">The Garden Table and Hospital Imaging System</p>
-              <p class="tl-desc">Two object-oriented programs built with inheritance and method overriding.</p>
+              <p class="tl-desc">Two object-oriented programs built with inheritance and method overriding. You can run both on this page.</p>
               <a class="tl-link" href="#projects">See the projects</a>
             </div>
             <div class="tl-year" aria-hidden="true">2026</div>
@@ -776,7 +818,7 @@
       <div class="container">
         <div class="section-head">
           <h2 data-reveal>Projects</h2>
-          <p data-reveal style="--d:0.1s">Things I've built while learning, from first programs to this website.</p>
+          <p data-reveal style="--d:0.1s">Things I've built while learning. Press "Try it" on a Java project to run it right here and answer its question yourself.</p>
         </div>
 
         <div class="project-grid">
@@ -799,9 +841,12 @@
           <article class="project" data-reveal>
             <div class="project-inner tilt">
               <div class="project-media">
-                <div class="terminal" role="img" aria-label="Terminal output of the Hospital Imaging System program">
-                  <div class="terminal-bar">Project.java</div>
-                  <div class="terminal-body">
+                <div class="terminal" data-program="hospital" role="group" aria-label="Hospital Imaging System program you can run">
+                  <div class="terminal-bar">
+                    <span>Project.java</span>
+                    <button class="run-btn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg><span class="run-label">Try it</span></button>
+                  </div>
+                  <div class="terminal-body" aria-live="polite">
                     <span class="ln cmd" style="--n:0">$ java Project</span>
                     <span class="ln" style="--n:1">Radiologist - Name: Dr Gorkem, Experience: 8 years, Scan type: MRI, Payment: $1200.0</span>
                     <span class="ln" style="--n:2">Nurse - Name: Nurse Ayse, Experience: 4 years, Department: Emergency, Payment: $480.0</span>
@@ -813,6 +858,12 @@
                     <span class="ln hl" style="--n:8">Nurse Ayse is helping patients in the Emergency department.</span>
                     <span class="ln" style="--n:9">Database name: Hospital Scan Database, Number of scans: <span class="num">121</span></span>
                   </div>
+                  <form class="terminal-input" hidden>
+                    <span class="prompt" aria-hidden="true">&gt;</span>
+                    <input type="text" aria-label="Your answer" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" maxlength="20" placeholder="type yes or no">
+                    <button type="button" data-answer="yes">yes</button>
+                    <button type="button" data-answer="no">no</button>
+                  </form>
                 </div>
               </div>
               <div class="project-body">
@@ -830,9 +881,12 @@
           <article class="project" data-reveal style="--d:0.12s">
             <div class="project-inner tilt">
               <div class="project-media">
-                <div class="terminal" id="java-terminal" role="img" aria-label="Terminal output of The Garden Table program">
-                  <div class="terminal-bar">Project.java</div>
-                  <div class="terminal-body">
+                <div class="terminal" data-program="garden" role="group" aria-label="The Garden Table program you can run">
+                  <div class="terminal-bar">
+                    <span>Project.java</span>
+                    <button class="run-btn" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg><span class="run-label">Try it</span></button>
+                  </div>
+                  <div class="terminal-body" aria-live="polite">
                     <span class="ln cmd" style="--n:0">$ java Project</span>
                     <span class="ln title" style="--n:1">=== The Garden Table===</span>
                     <span class="ln" style="--n:2">Baker -&gt; James, 5 years experience, 0 item(s) baked.</span>
@@ -845,6 +899,12 @@
                     <span class="ln hl" style="--n:9">Preparing drink: Sparkling Water (carbonated), served 1 time(s) today.</span>
                     <span class="ln" style="--n:10">Baker -&gt; James, 5 years experience, 2 item(s) baked.</span>
                   </div>
+                  <form class="terminal-input" hidden>
+                    <span class="prompt" aria-hidden="true">&gt;</span>
+                    <input type="text" aria-label="Your answer" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="send" maxlength="20" placeholder="type yes or no">
+                    <button type="button" data-answer="yes">yes</button>
+                    <button type="button" data-answer="no">no</button>
+                  </form>
                 </div>
               </div>
               <div class="project-body">
@@ -1310,6 +1370,8 @@
 
       document.querySelectorAll(".tilt").forEach(card => {
         card.addEventListener("mousemove", event => {
+          // İçindeki program çalışırken kart eğilmesin (yazı yazmak zorlaşmasın)
+          if (card.querySelector(".terminal.running")) { card.style.transform = ""; return; }
           const r = card.getBoundingClientRect();
           const px = (event.clientX - r.left) / r.width;    // 0 = sol, 1 = sağ
           const py = (event.clientY - r.top) / r.height;    // 0 = üst, 1 = alt
@@ -1331,6 +1393,247 @@
       });
     }, { threshold: 0.4 });
     document.querySelectorAll(".terminal").forEach(terminal => terminalObserver.observe(terminal));
+
+    /* ---------- 15b) Java projelerini tarayıcıda çalıştır ----------
+       Tarayıcı Java çalıştıramaz, ama JavaScript çalıştırır. Bu yüzden
+       Java sınıflarını birebir JavaScript'e çevirdik:
+         Java: class Dessert extends Dish   →  JS: class Dessert extends Dish
+         Java: private String name;         →  JS: #name;  (# = private)
+         Java: System.out.println(x);       →  JS: System.out.println(x);  (aynı!)
+         Java: in.nextLine()                →  JS: await input.nextLine()
+       "await" şu demek: ziyaretçi cevabını yazana kadar bekle. */
+
+    // Java'da double sayılar 3.0 diye yazılır, JavaScript'te 3. Aynı görünsün diye:
+    const javaDouble = n => Number.isInteger(n) ? n.toFixed(1) : String(n);
+
+    // ===== Program 1: The Garden Table (Project.java'nın çevirisi) =====
+    async function gardenTableProgram(System, input) {
+      class Dish {
+        #name; #price;
+        constructor(name, price) { this.#name = name; this.#price = price; }
+        getName() { return this.#name; }
+        getPrice() { return this.#price; }
+        getDetails() { return `${this.#name} ($${javaDouble(this.#price)})`; }
+        prepare() { System.out.println(`${this.#name} is being prepared`); }
+        toString() { return `Dish -> ${this.getDetails()}`; }
+      }
+
+      class Baker {
+        #name; #yearsOfExperience; #itemsBaked = 0; #preparedItems = [];
+        constructor(name, yearsOfExperience) { this.#name = name; this.#yearsOfExperience = yearsOfExperience; }
+        preparedItems(dish) {
+          dish.prepare();
+          this.#preparedItems.push(dish);
+          this.#itemsBaked++;
+        }
+        printPreparedItems() {
+          System.out.println(`${this.#name}'s prepared items todays:`);
+          for (const item of this.#preparedItems) System.out.println(`- ${item.getDetails()}`);
+        }
+        introduce() { return `${this.#name} has ${this.#yearsOfExperience} years of experience.`; }
+        toString() { return `Baker -> ${this.#name}, ${this.#yearsOfExperience} years experience, ${this.#itemsBaked} item(s) baked.`; }
+      }
+
+      class Dessert extends Dish {
+        #sweetnessLevel; #timeServed = 0;
+        constructor(name, price, sweetnessLevel) { super(name, price); this.#sweetnessLevel = sweetnessLevel; }
+        prepare() {
+          this.#timeServed++;
+          const message = `Preparing dessert: ${this.getName()} (sweetness level: ${this.#sweetnessLevel})`;
+          System.out.println(`${message}, served ${this.#timeServed} time(s) today.`);
+        }
+        getDetails() { return `${super.getDetails()}, Sweetness Level: ${this.#sweetnessLevel}`; }
+        toString() { return `Dessert -> ${this.getDetails()}`; }
+      }
+
+      class Drink extends Dish {
+        #carbonated; #timeServed = 0;
+        constructor(name, price, carbonated) { super(name, price); this.#carbonated = carbonated; }
+        prepare() {
+          this.#timeServed++;
+          let message = `Preparing drink: ${this.getName()}`;
+          if (this.#carbonated) message = message + " (carbonated)";
+          System.out.println(`${message}, served ${this.#timeServed} time(s) today.`);
+        }
+        getDetails() { return `${super.getDetails()}, Carbonated: ${this.#carbonated}`; }
+        toString() { return `Drink -> ${this.getDetails()}`; }
+      }
+
+      // main metodu
+      System.out.println("=== The Garden Table===");
+      const baker1 = new Baker("James", 5);
+      const dessert1 = new Dessert("Tiramisu", 8.50, 0);
+      const drink1 = new Drink("Sparkling Water", 3.00, true);
+
+      const menu = [];              // ArrayList<Dish> yerine dizi
+      menu.push(dessert1);
+      menu.push(drink1);
+
+      System.out.println(baker1);
+      System.out.println(baker1.introduce());
+      System.out.println("Today's menu");
+      for (const item of menu) System.out.println(item);
+
+      System.out.println("Should the baker prepare the dessert today ? (yes/no)");
+      const answer = await input.nextLine();
+      if (answer === "yes") {       // Java: answer.equals("yes")
+        baker1.preparedItems(dessert1);
+        System.out.println("After preparation:");
+        System.out.println(dessert1);
+      } else {
+        System.out.println("The dessert was not prepared today");
+      }
+
+      baker1.preparedItems(drink1);
+      System.out.println("After preparing the drink");
+      System.out.println(drink1);
+      System.out.println(baker1);
+
+      System.out.println("Final menu state:");
+      for (const item of menu) System.out.println(item);
+
+      baker1.printPreparedItems();
+    }
+
+    // ===== Program 2: Hospital Imaging System (Project.java'nın çevirisi) =====
+    async function hospitalProgram(System, input) {
+      class MedicalProfessional {
+        #name; #experienceYears;
+        constructor(name, experienceYears) { this.#name = name; this.#experienceYears = experienceYears; }
+        getName() { return this.#name; }
+        getExperienceYears() { return this.#experienceYears; }
+        performDuty() { System.out.println(`${this.#name} is working in the hospital.`); }
+        calculatePayment() { return this.#experienceYears * 100; }
+        toString() { return `Name: ${this.#name}, Experience: ${this.#experienceYears} years`; }
+      }
+
+      class Radiologist extends MedicalProfessional {
+        #scanType;
+        constructor(name, experienceYears, scanType) { super(name, experienceYears); this.#scanType = scanType; }
+        performDuty() { System.out.println(`${this.getName()} is checking ${this.#scanType} images.`); }
+        calculatePayment() { return this.getExperienceYears() * 150; }
+        toString() { return `Radiologist - ${super.toString()}, Scan type: ${this.#scanType}, Payment: $${javaDouble(this.calculatePayment())}`; }
+      }
+
+      class Nurse extends MedicalProfessional {
+        #department;
+        constructor(name, experienceYears, department) { super(name, experienceYears); this.#department = department; }
+        performDuty() { System.out.println(`${this.getName()} is helping patients in the ${this.#department} department.`); }
+        calculatePayment() { return this.getExperienceYears() * 120; }
+        toString() { return `Nurse - ${super.toString()}, Department: ${this.#department}, Payment: $${javaDouble(this.calculatePayment())}`; }
+      }
+
+      class ImagingDatabase {
+        #databaseName; #numberOfScans;
+        constructor(databaseName, numberOfScans) { this.#databaseName = databaseName; this.#numberOfScans = numberOfScans; }
+        addScan() {
+          this.#numberOfScans++;
+          System.out.println("A new scan was added to the database.");
+        }
+        toString() { return `Database name: ${this.#databaseName}, Number of scans: ${this.#numberOfScans}`; }
+      }
+
+      // main metodu
+      const radiologist = new Radiologist("Dr Gorkem", 8, "MRI");
+      const nurse = new Nurse("Nurse Ayse", 4, "Emergency");
+      const database = new ImagingDatabase("Hospital Scan Database", 120);
+
+      System.out.println(radiologist);
+      System.out.println(nurse);
+      System.out.println(database);
+
+      System.out.println("Do you want to add a new scan? (yes/no)");
+      const answer = await input.nextLine();
+      if (answer === "yes") {
+        database.addScan();
+        radiologist.performDuty();
+        nurse.performDuty();
+      } else {
+        System.out.println("No new scan was added.");
+      }
+
+      System.out.println(radiologist);
+      System.out.println(nurse);
+      System.out.println(database);
+    }
+
+    // ===== Terminali çalıştıran motor =====
+    const programs = { garden: gardenTableProgram, hospital: hospitalProgram };
+
+    document.querySelectorAll(".terminal[data-program]").forEach(terminal => {
+      const program = programs[terminal.dataset.program];
+      const output = terminal.querySelector(".terminal-body");
+      const form = terminal.querySelector(".terminal-input");
+      const field = form.querySelector("input");
+      const runBtn = terminal.querySelector(".run-btn");
+      const runLabel = runBtn.querySelector(".run-label");
+      const queue = [];   // ekrana yazılmayı bekleyen satırlar
+      const wait = ms => new Promise(resolve => setTimeout(resolve, reduceMotion ? 0 : ms));
+
+      function addLine(text, cls = "") {
+        const line = document.createElement("span");
+        line.className = `ln ${cls}`.trim();
+        line.textContent = text;
+        output.appendChild(line);
+        output.scrollTop = output.scrollHeight;
+      }
+
+      // Sıradaki satırları gerçek bir terminal gibi birer birer yaz
+      async function flush() {
+        while (queue.length) {
+          const { text, cls } = queue.shift();
+          addLine(text, cls);
+          await wait(55);
+        }
+      }
+
+      // Ziyaretçi Enter'a basana ya da yes/no butonuna tıklayana kadar bekle
+      function waitForAnswer() {
+        return new Promise(resolve => {
+          form.hidden = false;
+          if (finePointer) field.focus({ preventScroll: true });
+          const finish = answer => {
+            form.hidden = true;
+            field.value = "";
+            form.onsubmit = null;
+            resolve(answer);
+          };
+          form.onsubmit = event => { event.preventDefault(); finish(field.value); };
+          form.querySelectorAll("[data-answer]").forEach(button => {
+            button.onclick = () => finish(button.dataset.answer);
+          });
+        });
+      }
+
+      // Java'daki System.out ve Scanner'ın bu terminale bağlı halleri
+      const System = { out: { println: (value = "") => queue.push({ text: String(value), cls: "" }) } };
+      const scanner = {
+        nextLine: async () => {
+          await flush();
+          const answer = await waitForAnswer();
+          addLine(answer, "input");
+          return answer;
+        }
+      };
+
+      runBtn.addEventListener("click", async () => {
+        runBtn.disabled = true;
+        terminal.classList.add("run", "running");
+        terminal.classList.remove("done");
+        output.textContent = "";
+        queue.length = 0;
+        addLine("$ java Project", "cmd");
+        await wait(350);
+        await program(System, scanner);
+        await flush();
+        addLine(" ");
+        addLine("Process finished with exit code 0", "cmd");
+        terminal.classList.remove("running");
+        terminal.classList.add("done");
+        runLabel.textContent = "Run again";
+        runBtn.disabled = false;
+      });
+    });
 
     /* ---------- 15) Video oynatıcı ---------- */
     const videoStage = document.getElementById("video-stage");
